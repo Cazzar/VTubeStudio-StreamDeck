@@ -1,0 +1,53 @@
+﻿{
+  "Actions": [
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Change Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Change Model]",
+      "UUID": "dev.cazzar.vtubestudio.changemodel",
+      "PropertyInspectorPath": "PropertyInspector/ModelChange.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Trigger Hotkey",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Trigger Hotkey]",
+      "UUID": "dev.cazzar.vtubestudio.triggerhotkey",
+      "PropertyInspectorPath": "PropertyInspector/TriggerHotkey.html"
+    }
+  ],
+  "Author": "Cazzar",
+  "Description": "Trigger and control VTubeStudio straight from your stream deck",
+  "Name": "VTubeStudio",
+  "Icon": "vts_logo_transparent",
+  "URL": "https://cazzar.dev/",
+  "Version": "0.1",
+  "CodePath": "streamdeck-vtubestudio",
+  "Category": "VTubeStudio [Cazzar]",
+  "CategoryIcon": "",
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "4.9"
+  }
+}

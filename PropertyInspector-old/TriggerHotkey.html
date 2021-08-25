@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,minimal-ui,viewport-fit=cover">
+    <meta name=apple-mobile-web-app-capable content=yes>
+    <meta name=apple-mobile-web-app-status-bar-style content=black>
+    <title>VTube Studio Settings</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/barraider/streamdeck-easypi@latest/src/sdpi.css">
+    <script src="https://cdn.jsdelivr.net/gh/barraider/streamdeck-easypi@latest/src/sdtools.common.js"></script>
+    <!--        <script src="Launcher.js"></script>-->
+</head>
+<body>
+<div class="sdpi-item" id="dvModel">
+    <div class="sdpi-item-label">Model</div>
+    <select class="sdpi-item-value select sdProperty sdList" id="models" oninput="setSettings()" sdListTextProperty="Name" sdListValueProperty="Id" sdValueField="modelId"></select>
+</div>
+
+<div class="sdpi-item" id="dvHotkey">
+    <div class="sdpi-item-label">Hotkey</div>
+    <select class="sdpi-item-value select sdProperty sdList" id="hotkeys" oninput="setSettings()" sdListTextProperty="Name" sdListValueProperty="Id" sdValueField="hotkeyId"></select>
+</div>
+
+<div type="checkbox" class="sdpi-item" id="dvTitle">
+    <div class="sdpi-item-label">Name</div>
+    <div class="sdpi-item-value">
+        <input id="showName" type="checkbox" value="" class="sdProperty sdCheckbox" oninput="setSettings()">
+        <label for="showName" class="sdpi-item-label"><span></span>Show model name on key</label>
+    </div>
+</div>
+</body>
+</html>
