@@ -47,7 +47,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         public ChangeModelAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
             //Ensure global settings is loaded;
-            GlobalSettingsManager.Instance.RequestGlobalSettings();
+            GlobalSettingsManager.Instance.Load();
             
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
             if (payload.Settings == null || payload.Settings.Count == 0)
@@ -101,12 +101,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             var models = ModelCache.Instance.Models.Select(s => new VTubeReference() {Id = s.Id, Name = s.Name}).ToList();
 
-            await Connection.SendToPropertyInspectorAsync(JObject.FromObject(new {Models = models}));
+            await Connection.SendToPropertyInspectorAsync(JObject.FromObject(new {Models = models, Connected = VTubeStudioWebsocketClient.Instance.IsAuthed}));
         }
         
         private Task SaveSettings()
         {
-            Logger.Instance.LogMessage(TracingLevel.INFO, $"Settings: {JsonConvert.SerializeObject(_settings)}");
             return Connection.SetSettingsAsync(JObject.FromObject(_settings));
         }
         
@@ -155,6 +154,10 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (_settings.ShowName && ModelCache.Instance.Models != null && _titleParms != null)
                 await Connection.SetTitleAsync(Tools.SplitStringToFit(ModelCache.Instance.Models.FirstOrDefault(s => s.Id == _settings.ModelId)?.Name ?? "", _titleParms));
             await SendDataToClient();
+            VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
+
+            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
+                await Connection.ShowAlert();
         }
 
         public override void Dispose()

@@ -33,7 +33,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         public TriggerHotkeyAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
             //Ensure global settings is loaded;
-            GlobalSettingsManager.Instance.RequestGlobalSettings();
+            GlobalSettingsManager.Instance.Load();
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
             
             if (payload.Settings == null || payload.Settings.Count == 0)
@@ -159,6 +159,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await UpdateTitle();
             
             await SendDataToClient();
+            
+            VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
+            
+            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
+                await Connection.ShowAlert();
         }
 
         public override void Dispose()

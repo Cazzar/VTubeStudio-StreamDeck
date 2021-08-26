@@ -38,12 +38,18 @@
   "URL": "https://cazzar.dev/",
   "Version": "0.1",
   "CodePath": "streamdeck-vtubestudio",
+  "CodePathWin": "streamdeck-vtubestudio.exe",
+  "CodePathMac": "streamdeck-vtubestudio",
   "Category": "VTubeStudio [Cazzar]",
   "CategoryIcon": "",
   "OS": [
     {
       "Platform": "windows",
       "MinimumVersion": "10"
+    },
+    {
+      "Platform": "mac",
+      "MinimumVersion": "10.11"
     }
   ],
   "SDKVersion": 2,

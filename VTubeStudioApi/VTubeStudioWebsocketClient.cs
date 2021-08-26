@@ -18,7 +18,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public static VTubeStudioWebsocketClient Instance { get; } = new();
 
         public bool IsAuthed => _authed && _ws.IsAlive;
+        public bool WsIsAlive => _ws.IsAlive;
 
+        private bool _tryingToConnect = false;
         private WebSocket _ws = null;
         private bool _authed = false;
 
@@ -34,22 +36,30 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public void Send<T>(ApiRequest<T> request)
         {
             var data = JsonConvert.SerializeObject(new RequestWrapper<T>(request));
-            Logger.Instance.LogMessage(TracingLevel.INFO, $">>> {data}");
+            // Logger.Instance.LogMessage(TracingLevel.INFO, $">>> {data}");
             _ws.Send(data);
         }
 
 
         public void ConnectIfNeeded()
         {
-            if (_ws is not null && _ws.IsAlive)
-                return;
-
-            Connect();
+            if (_ws is not null && _ws.IsAlive) return;
+            if (_tryingToConnect) return;
+            
+            _tryingToConnect = true;
+            Task.Run(
+                () =>
+                {
+                    Connect();
+                    _tryingToConnect = false;
+                }
+            );
         }
 
         private void Connect()
         {
             Logger.Instance.LogMessage(TracingLevel.INFO, "Connecting to websocket");
+            _authed = false;
             _ws = new("ws://localhost:8001");
             SetupEvents();
             _ws.Connect();
@@ -64,7 +74,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         private void MessageReceived(object sender, MessageEventArgs e)
         {
             if (!e.IsText) return; //Don't handle binary.
-            Logger.Instance.LogMessage(TracingLevel.INFO, $"<<< {e.Data}");
+            // Logger.Instance.LogMessage(TracingLevel.INFO, $"<<< {e.Data}");
 
             var response = JsonConvert.DeserializeObject<ApiResponse>(e.Data);
            
