@@ -36,12 +36,12 @@
   "Name": "VTubeStudio",
   "Icon": "vts_logo_transparent",
   "URL": "https://cazzar.dev/",
-  "Version": "0.1",
+  "Version": "0.3",
   "CodePath": "streamdeck-vtubestudio",
   "CodePathWin": "streamdeck-vtubestudio.exe",
   "CodePathMac": "streamdeck-vtubestudio",
   "Category": "VTubeStudio [Cazzar]",
-  "CategoryIcon": "",
+  "CategoryIcon": "",1
   "OS": [
     {
       "Platform": "windows",

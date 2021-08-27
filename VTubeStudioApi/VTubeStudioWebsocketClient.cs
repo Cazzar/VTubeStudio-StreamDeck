@@ -33,9 +33,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
         }
 
-        public void Send<T>(ApiRequest<T> request)
+        public void Send(ApiRequest request)
         {
-            var data = JsonConvert.SerializeObject(new RequestWrapper<T>(request));
+            var data = JsonConvert.SerializeObject(new RequestWrapper(request));
             // Logger.Instance.LogMessage(TracingLevel.INFO, $">>> {data}");
             _ws.Send(data);
         }
@@ -45,7 +45,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
             if (_ws is not null && _ws.IsAlive) return;
             if (_tryingToConnect) return;
-            
+
             _tryingToConnect = true;
             Task.Run(
                 () =>
@@ -69,6 +69,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
             _ws.OnOpen += (sender, args) => SocketConnected?.Invoke(this, null);
             _ws.OnMessage += MessageReceived;
+            _ws.OnClose += (sender, args) => SocketClosed?.Invoke(this, args);
         }
 
         private void MessageReceived(object sender, MessageEventArgs e)
@@ -77,11 +78,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             // Logger.Instance.LogMessage(TracingLevel.INFO, $"<<< {e.Data}");
 
             var response = JsonConvert.DeserializeObject<ApiResponse>(e.Data);
-           
+
             switch (response.MessageType)
             {
                 case ResponseType.APIError:
-                    OnApiError?.Invoke(this, new (response.Data.ToObject<ApiError>())); 
+                    OnApiError?.Invoke(this, new (response.Data.ToObject<ApiError>()));
                     break;
                 case ResponseType.APIStateResponse:
                     var data = response.Data.ToObject<ApiStateResponse>();
@@ -98,7 +99,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                     break;
                 case ResponseType.StatisticsResponse: break;
                 case ResponseType.VTSFolderInfoResponse: break;
-                case ResponseType.CurrentModelResponse: break;
+                case ResponseType.CurrentModelResponse:
+                    OnCurrentModelInformation?.Invoke(this, new (response.Data.ToObject<CurrentModelResponse>()));
+                    break;
                 case ResponseType.AvailableModelsResponse:
                     OnAvailableModels?.Invoke(this, new (response.Data.ToObject<AvailableModelsResponse>()));
                     break;
@@ -128,7 +131,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         private void Disconnect()
         {
             if (_ws == null) return;
-            
+
             try
             {
                 _ws.Close();
@@ -139,7 +142,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 // ignored
             }
         }
-        
+
         public void Reconnect()
         {
             Disconnect();
@@ -149,6 +152,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
 #region Events
 
         public static event EventHandler<EventArgs> SocketConnected;
+        public static event EventHandler<CloseEventArgs> SocketClosed;
         public static event EventHandler<ApiEventArgs<ApiError>> OnApiError;
         public static event EventHandler<ApiEventArgs<ApiStateResponse>> OnApiState;
         public static event EventHandler<ApiEventArgs<AuthenticateResponse>> OnTokenResponse;
@@ -157,7 +161,8 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public static event EventHandler<ApiEventArgs<ModelLoadResponse>> OnModelLoad;
         public static event EventHandler<ApiEventArgs<ModelHotkeysResponse>> OnModelHotkeys;
         public static event EventHandler<ApiEventArgs<HotkeyTriggerResponse>> OnHotkeyTriggered;
-        
+        public static event EventHandler<ApiEventArgs<CurrentModelResponse>> OnCurrentModelInformation;
+
 #endregion
     }
 }

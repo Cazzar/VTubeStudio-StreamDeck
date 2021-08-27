@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
-    public class ModelLoadRequest : ApiRequest<ModelLoadResponse>
+    public class ModelLoadRequest : ApiRequest
     {
         [JsonProperty("modelID")]
         public string Id { get; set; }

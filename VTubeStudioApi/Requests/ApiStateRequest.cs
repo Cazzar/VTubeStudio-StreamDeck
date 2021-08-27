@@ -3,7 +3,7 @@
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
     [AuthLess]
-    public class ApiStateRequest : ApiRequest<ApiStateResponse>
+    public class ApiStateRequest : ApiRequest
     {
         public override RequestType MessageType { get; } = RequestType.APIStateRequest;
     }

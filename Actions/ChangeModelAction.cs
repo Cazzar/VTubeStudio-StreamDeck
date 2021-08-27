@@ -43,12 +43,12 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             VTubeStudioWebsocketClient.OnModelLoad += (sender, args) => RateLimiter.ChangeModel.Trigger();
         }
-        
+
         public ChangeModelAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
             //Ensure global settings is loaded;
             GlobalSettingsManager.Instance.Load();
-            
+
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
             if (payload.Settings == null || payload.Settings.Count == 0)
                 _settings = new();
@@ -60,7 +60,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             ModelCache.Instance.ModelCacheUpdated += ModelCacheUpdated;
             Connection.OnSendToPlugin += DataFromPropertyInspector;
         }
-        
+
         private void DataFromPropertyInspector(object sender, SDEventReceivedEventArgs<SendToPlugin> e)
         {
             var pl = e.Event.Payload.ToObject<PluginPayload>();
@@ -96,19 +96,19 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             await SendDataToClient();
         }
-        
+
         private async Task SendDataToClient()
         {
             var models = ModelCache.Instance.Models.Select(s => new VTubeReference() {Id = s.Id, Name = s.Name}).ToList();
 
             await Connection.SendToPropertyInspectorAsync(JObject.FromObject(new {Models = models, Connected = VTubeStudioWebsocketClient.Instance.IsAuthed}));
         }
-        
+
         private Task SaveSettings()
         {
             return Connection.SetSettingsAsync(JObject.FromObject(_settings));
         }
-        
+
         public override void KeyPressed(KeyPayload payload)
         {
             Logger.Instance.LogMessage(TracingLevel.INFO, "Key Pressed");
@@ -124,7 +124,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 Logger.Instance.LogMessage(TracingLevel.WARN, "Key pressed but rate limit hit!");
                 return;
             }
-            
+
             VTubeStudioWebsocketClient.Instance.Send(new ModelLoadRequest(_settings.ModelId));
         }
 
@@ -144,9 +144,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 await Connection.SetTitleAsync(Tools.SplitStringToFit(ModelCache.Instance.Models.FirstOrDefault(s => s.Id == _settings.ModelId)?.Name ?? "", _titleParms));
         }
 
-        public override void ReceivedGlobalSettings(ReceivedGlobalSettingsPayload payload) 
+        public override void ReceivedGlobalSettings(ReceivedGlobalSettingsPayload payload)
         {
-            
+
         }
 
         public override async void OnTick()
@@ -155,6 +155,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 await Connection.SetTitleAsync(Tools.SplitStringToFit(ModelCache.Instance.Models.FirstOrDefault(s => s.Id == _settings.ModelId)?.Name ?? "", _titleParms));
             await SendDataToClient();
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
+
+            if (_settings.ModelId != null && _settings.ModelId == StateManager.CurrentModelId)
+                await Connection.ShowOk();
 
             if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
                 await Connection.ShowAlert();

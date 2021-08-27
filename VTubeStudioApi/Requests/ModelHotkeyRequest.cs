@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
-    public class ModelHotkeyRequest : ApiRequest<ModelHotkeysResponse>
+    public class ModelHotkeyRequest : ApiRequest
     {
         [JsonProperty("modelID")]
         public string ModelId { get; set; }

@@ -2,8 +2,8 @@
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
-    public abstract class ApiRequest
+    public class CurrentModelRequest : ApiRequest
     {
-        public abstract RequestType MessageType { get; }
+        public override RequestType MessageType { get; } = RequestType.CurrentModelRequest;
     }
 }

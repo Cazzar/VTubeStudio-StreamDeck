@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
     [AuthLess]
-    public class AuthWithTokenRequest : ApiRequest<AuthenticationResponse>
+    public class AuthWithTokenRequest : ApiRequest
     {
         [JsonProperty("pluginName")] 
         public string Name { get; } = "StreamDeck Integration";

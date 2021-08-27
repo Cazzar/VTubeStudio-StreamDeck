@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 {
-    public class HotkeyTriggerRequest : ApiRequest<HotkeyTriggerResponse>
+    public class HotkeyTriggerRequest : ApiRequest
     {
         [JsonProperty("hotkeyID")]
         public string Id { get; set; }
