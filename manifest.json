@@ -29,6 +29,21 @@
       "Tooltip": "VTubeStudio [Trigger Hotkey]",
       "UUID": "dev.cazzar.vtubestudio.triggerhotkey",
       "PropertyInspectorPath": "PropertyInspector/TriggerHotkey.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Move Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Change Model]",
+      "UUID": "dev.cazzar.vtubestudio.movemodel",
+      "PropertyInspectorPath": "PropertyInspector/MoveModel.html"
     }
   ],
   "Author": "Cazzar",
@@ -41,7 +56,7 @@
   "CodePathWin": "streamdeck-vtubestudio.exe",
   "CodePathMac": "streamdeck-vtubestudio",
   "Category": "VTubeStudio [Cazzar]",
-  "CategoryIcon": "",1
+  "CategoryIcon": "",
   "OS": [
     {
       "Platform": "windows",

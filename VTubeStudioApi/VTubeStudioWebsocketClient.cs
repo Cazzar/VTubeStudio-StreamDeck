@@ -58,7 +58,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
 
         private void Connect()
         {
-            Logger.Instance.LogMessage(TracingLevel.INFO, "Connecting to websocket");
             _authed = false;
             _ws = new("ws://localhost:8001");
             SetupEvents();
@@ -75,7 +74,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         private void MessageReceived(object sender, MessageEventArgs e)
         {
             if (!e.IsText) return; //Don't handle binary.
-            // Logger.Instance.LogMessage(TracingLevel.INFO, $"<<< {e.Data}");
 
             var response = JsonConvert.DeserializeObject<ApiResponse>(e.Data);
 
@@ -108,7 +106,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 case ResponseType.ModelLoadResponse:
                     OnModelLoad?.Invoke(this, new(response.Data.ToObject<ModelLoadResponse>()));
                     break;
-                case ResponseType.MoveModelResponse: break;
+                case ResponseType.MoveModelResponse:
+                    OnModelMove?.Invoke(this, new(response.Data.ToObject<EmptyResponse>()));
+                    break;
                 case ResponseType.HotkeysInCurrentModelResponse:
                     OnModelHotkeys?.Invoke(this, new (response.Data.ToObject<ModelHotkeysResponse>()));
                     break;
@@ -162,7 +162,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public static event EventHandler<ApiEventArgs<ModelHotkeysResponse>> OnModelHotkeys;
         public static event EventHandler<ApiEventArgs<HotkeyTriggerResponse>> OnHotkeyTriggered;
         public static event EventHandler<ApiEventArgs<CurrentModelResponse>> OnCurrentModelInformation;
-
+        public static event EventHandler<ApiEventArgs<EmptyResponse>> OnModelMove;
 #endregion
     }
 }
