@@ -119,11 +119,11 @@ jobs:
         with:
           name: streamDeckPlugin
           path: .
-      - name: "Release ${{ needs.version.output.ver }}"
+      - name: "Release ${{ needs.version.outputs.ver }}"
         uses: softprops/action-gh-release@v1
         with:
           files: ./${{ env.plugin }}.streamDeckPlugin
-          tag_name: ${{ needs.version.output.ver }}
+          tag_name: ${{ needs.version.outputs.ver }}
           prerelease: ${{ github.event_name != 'workflow_dispatch' }}
           fail_on_unmatched_files: true
         env:
