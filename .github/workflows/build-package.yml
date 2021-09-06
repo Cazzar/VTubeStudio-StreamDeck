@@ -16,10 +16,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: build for windows
-        run: dotnet publish -c Release --runtime win-x64 -o ${{ plugin }}
+        run: dotnet publish -c Release --runtime win-x64 -o ${{ env.plugin }}
 
       - name: build for osx
-        run: dotnet publish -c Release --runtime osx-x64 -o ${{ plugin }}
+        run: dotnet publish -c Release --runtime osx-x64 -o ${{ env.plugin }}
 
       - name: build property inspector
         run: |
@@ -28,7 +28,7 @@ jobs:
         working-directory: ./PropertyInspector
 
       - name: copy PI to output
-        run: Copy-Item "./PropertyInspector/dist/*" -Destination "./${{ plugin }}/PropertyInspector" -Recurse
+        run: Copy-Item "./PropertyInspector/dist/*" -Destination "./${{ env.plugin }}/PropertyInspector" -Recurse
 
       - name: download dist tool
         run: |
@@ -36,6 +36,6 @@ jobs:
           Expand-Archive DistributionTool.zip -DestinationPath .
 
       - name: make sdPlugin package
-        run: ./DistributionTool.exe -b -i ${{ plugin }} -o .
+        run: ./DistributionTool.exe -b -i ${{ env.plugin }} -o .
 
 
