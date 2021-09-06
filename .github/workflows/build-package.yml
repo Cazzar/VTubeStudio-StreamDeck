@@ -9,31 +9,39 @@ env:
   plugin: dev.cazzar.streamdeck.vtubestudio.sdPlugin
 
 jobs:
-  checkout:
+  binary:
     runs-on: windows-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
-  binary:
-    runs-on: windows-latest
-    needs: checkout
-    steps:
       - name: build for windows
-        run: dotnet publish -c Release --runtime win-x64 -o ${{ env.plugin }}
+        run: dotnet publish -c Release --runtime win-x64 -o build
 
       - name: build for osx
-        run: dotnet publish -c Release --runtime osx-x64 -o ${{ env.plugin }}
+        run: dotnet publish -c Release --runtime osx-x64 -o build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: binary-out
+          path: build/
 
   property-inspector:
     runs-on: windows-latest
-    needs: checkout
     steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
       - name: build property inspector
         run: |
           yarn install --frozen-lockfile
           yarn build
         working-directory: ./PropertyInspector
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: property-inspector
+          path: ./PropertyInspector/dist/
 
   bundle:
     runs-on: windows-latest
@@ -41,8 +49,20 @@ jobs:
       - binary
       - property-inspector
     steps:
-      - name: copy PI to output
-        run: Copy-Item "./PropertyInspector/dist/*" -Destination "./${{ env.plugin }}/PropertyInspector" -Recurse
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: binary-out
+          path: ${{ env.plugin }}
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: property-inspector
+          path: ${{ env.plugin }}/PropertyInspector
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: ${{ env.plugin }}
 
       - name: download dist tool
         run: |
@@ -52,8 +72,9 @@ jobs:
       - name: make sdPlugin package
         run: ./DistributionTool.exe -b -i ${{ env.plugin }} -o .
 
-  artefact:
+  artifact:
     runs-on: windows-latest
+    needs: bundle
     steps:
       - uses: actions/upload-artifact@v2
         with:
