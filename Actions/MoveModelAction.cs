@@ -36,7 +36,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             public bool Relative { get; set; } = true;
         }
         
-        private readonly PluginSettings _settings;
+        private PluginSettings _settings;
         
         public MoveModelAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
@@ -117,7 +117,8 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             try
             {
-                Tools.AutoPopulateSettings(_settings, payload.Settings);
+                _settings = payload.Settings.ToObject<PluginSettings>();
+                // Tools.AutoPopulateSettings(_settings, payload.Settings);
             }
             catch (Exception e)
             {
