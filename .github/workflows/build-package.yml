@@ -1,0 +1,35 @@
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - created
+
+jobs:
+  build-image:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build for windows
+        run: dotnet publish -c Release --runtime win-x64 -o build
+
+      - name: build for osx
+        run: dotnet publish -c Release --runtime win-x64 -o build
+
+      - name: build property inspector
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        working-directory: ./PropertyInspector
+
+      - name: copy PI to output
+        run: Copy-Item "./PropertyInspector/dist/*" -Destination "./build/PropertyInspector" -Recurse
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: build
+
+
