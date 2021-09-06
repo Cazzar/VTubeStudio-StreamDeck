@@ -12,6 +12,9 @@ jobs:
   version:
     runs-on: windows-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
       - name: Get previous release version
         id: previoustag
         uses: "WyriHaximus/github-action-get-previous-tag@v1"
