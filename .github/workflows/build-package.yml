@@ -9,33 +9,53 @@ env:
   plugin: dev.cazzar.streamdeck.vtubestudio.sdPlugin
 
 jobs:
-  build-image:
+  checkout:
     runs-on: windows-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
 
+  binary:
+    runs-on: windows-latest
+    needs: checkout
+    steps:
       - name: build for windows
         run: dotnet publish -c Release --runtime win-x64 -o ${{ env.plugin }}
 
       - name: build for osx
         run: dotnet publish -c Release --runtime osx-x64 -o ${{ env.plugin }}
 
+  property-inspector:
+    runs-on: windows-latest
+    needs: checkout
+    steps:
       - name: build property inspector
         run: |
           yarn install --frozen-lockfile
           yarn build
         working-directory: ./PropertyInspector
 
+  bundle:
+    runs-on: windows-latest
+    needs:
+      - binary
+      - property-inspector
+    steps:
       - name: copy PI to output
         run: Copy-Item "./PropertyInspector/dist/*" -Destination "./${{ env.plugin }}/PropertyInspector" -Recurse
 
       - name: download dist tool
         run: |
-          Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutDir DistributionTool.zip
+          Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutFile DistributionTool.zip
           Expand-Archive DistributionTool.zip -DestinationPath .
 
       - name: make sdPlugin package
         run: ./DistributionTool.exe -b -i ${{ env.plugin }} -o .
 
-
+  artefact:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.plugin }}
+          path: ${{ env.plugin }}
