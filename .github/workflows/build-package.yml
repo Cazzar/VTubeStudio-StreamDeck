@@ -96,10 +96,6 @@ jobs:
           name: property-inspector
           path: ${{ env.plugin }}.sdPlugin/PropertyInspector
 
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: ${{ env.plugin }}
-
       - name: download dist tool
         run: |
           Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutFile DistributionTool.zip
