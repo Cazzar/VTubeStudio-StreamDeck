@@ -1,19 +1,44 @@
 
 on:
   workflow_dispatch:
-  release:
-    types:
-      - created
+  push:
+    branches:
+      - main
 
 env:
-  plugin: dev.cazzar.streamdeck.vtubestudio.sdPlugin
+  plugin: dev.cazzar.streamdeck.vtubestudio
 
 jobs:
+  version:
+    runs-on: windows-latest
+    steps:
+      - name: Get previous release version
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0
+
+      - name: 'Get next minor version'
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+    outputs:
+      ver: ${{ github.event_name == 'workflow_dispatch' && steps.semvers.outputs.minor || steps.semvers.outputs.patch }}
+
+
   binary:
+    needs: version
     runs-on: windows-latest
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      - uses: jossef/action-set-json-field@v1
+        with:
+          file: manifest.json
+          field: Version
+          value: ${{ needs.version.outputs.ver }}
 
       - name: build for windows
         run: dotnet publish -c Release --runtime win-x64 -o build
@@ -25,6 +50,14 @@ jobs:
         with:
           name: binary-out
           path: build/
+
+      - name: Update manifest
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: master
+          commit_message: Update manifest
+          file_pattern: manifest-unstable.json
+          skip_fetch: true
 
   property-inspector:
     runs-on: windows-latest
@@ -53,12 +86,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: binary-out
-          path: ${{ env.plugin }}
+          path: ${{ env.plugin }}.sdPlugin
 
       - uses: actions/download-artifact@v2
         with:
           name: property-inspector
-          path: ${{ env.plugin }}/PropertyInspector
+          path: ${{ env.plugin }}.sdPlugin/PropertyInspector
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -70,13 +103,29 @@ jobs:
           Expand-Archive DistributionTool.zip -DestinationPath .
 
       - name: make sdPlugin package
-        run: ./DistributionTool.exe -b -i ${{ env.plugin }} -o .
+        run: ./DistributionTool.exe -b -i ${{ env.plugin }}.sdPlugin -o .
 
-  artifact:
-    runs-on: windows-latest
-    needs: bundle
-    steps:
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.plugin }}
-          path: ${{ env.plugin }}
+          name: streamDeckPlugin
+          path: ${{ env.plugin }}.streamDeckPlugin
+
+  release:
+    runs-on: windows-latest
+    needs:
+      - bundle
+      - version
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: streamDeckPlugin
+          path: .
+      - name: "Release ${{ needs.version.output.ver }}"
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./${{ env.plugin }}.streamDeckPlugin
+          tag_name: ${{ needs.version.output.ver }}
+          prerelease: ${{ github.event_name != 'workflow_dispatch' }}
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
