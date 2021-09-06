@@ -37,11 +37,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - uses: jossef/action-set-json-field@v1
+      - uses: 898anil/github-actions-json-edit@v0.2
         with:
-          file: manifest.json
-          field: Version
-          value: ${{ needs.version.outputs.ver }}
+          file_path: manifest.json
+          field_path: Version
+          field_value: ${{ needs.version.outputs.ver }}
 
       - name: build for windows
         run: dotnet publish -c Release --runtime win-x64 -o build
