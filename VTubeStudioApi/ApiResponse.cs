@@ -32,5 +32,8 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         
         [JsonProperty("data")] 
         public JObject Data { get; init; }
+        [JsonProperty("requestID")]
+        public string RequestId { get; init; }
+
     }
 }

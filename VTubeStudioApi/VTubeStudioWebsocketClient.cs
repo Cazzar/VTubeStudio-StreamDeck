@@ -33,9 +33,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
         }
 
-        public void Send(ApiRequest request)
+        public void Send(ApiRequest request, string requestId = null)
         {
-            var data = JsonConvert.SerializeObject(new RequestWrapper(request));
+            var data = JsonConvert.SerializeObject(new RequestWrapper(request) { RequestId = requestId });
             // Logger.Instance.LogMessage(TracingLevel.INFO, $">>> {data}");
             _ws.Send(data);
         }
@@ -80,7 +80,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             switch (response.MessageType)
             {
                 case ResponseType.APIError:
-                    OnApiError?.Invoke(this, new (response.Data.ToObject<ApiError>()));
+                    OnApiError?.Invoke(this, new (response.Data.ToObject<ApiError>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.APIStateResponse:
                     var data = response.Data.ToObject<ApiStateResponse>();
@@ -88,32 +88,32 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                     OnApiState?.Invoke(this, new (data));
                     break;
                 case ResponseType.AuthenticationTokenResponse:
-                    OnTokenResponse?.Invoke(this, new (response.Data.ToObject<AuthenticateResponse>()));
+                    OnTokenResponse?.Invoke(this, new (response.Data.ToObject<AuthenticateResponse>()) { RequestId = response.RequestId });
                     break;
                 case ResponseType.AuthenticationResponse:
                     var d = response.Data.ToObject<AuthenticationResponse>();
                     _authed = d?.Authenticated ?? false;
-                    OnAuthenticationResponse?.Invoke(this, new (d));
+                    OnAuthenticationResponse?.Invoke(this, new (d) { RequestId = response.RequestId });
                     break;
                 case ResponseType.StatisticsResponse: break;
                 case ResponseType.VTSFolderInfoResponse: break;
                 case ResponseType.CurrentModelResponse:
-                    OnCurrentModelInformation?.Invoke(this, new (response.Data.ToObject<CurrentModelResponse>()));
+                    OnCurrentModelInformation?.Invoke(this, new (response.Data.ToObject<CurrentModelResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.AvailableModelsResponse:
-                    OnAvailableModels?.Invoke(this, new (response.Data.ToObject<AvailableModelsResponse>()));
+                    OnAvailableModels?.Invoke(this, new (response.Data.ToObject<AvailableModelsResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.ModelLoadResponse:
-                    OnModelLoad?.Invoke(this, new(response.Data.ToObject<ModelLoadResponse>()));
+                    OnModelLoad?.Invoke(this, new(response.Data.ToObject<ModelLoadResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.MoveModelResponse:
-                    OnModelMove?.Invoke(this, new(response.Data.ToObject<EmptyResponse>()));
+                    OnModelMove?.Invoke(this, new(response.Data.ToObject<EmptyResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.HotkeysInCurrentModelResponse:
-                    OnModelHotkeys?.Invoke(this, new (response.Data.ToObject<ModelHotkeysResponse>()));
+                    OnModelHotkeys?.Invoke(this, new (response.Data.ToObject<ModelHotkeysResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.HotkeyTriggerResponse:
-                    OnHotkeyTriggered?.Invoke(this, new (response.Data.ToObject<HotkeyTriggerResponse>()));
+                    OnHotkeyTriggered?.Invoke(this, new (response.Data.ToObject<HotkeyTriggerResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.ArtMeshListResponse: break;
                 case ResponseType.ColorTintResponse: break;
