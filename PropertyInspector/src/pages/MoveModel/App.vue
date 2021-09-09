@@ -2,7 +2,7 @@
 <div class="sdpi-item" id="select_model">
     <div class="sdpi-item-label">Duration (seconds)</div>
     <span class="sdpi-item-value">
-        <input type="number" step="0.1" id="seconds" required v-model="settings.seconds"/>
+        <input type="number" step="0.1" min="0" max="2" id="seconds" required v-model="settings.seconds"/>
     </span>
 </div>
 <div type="checkbox" class="sdpi-item">
