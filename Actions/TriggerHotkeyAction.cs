@@ -83,7 +83,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (!string.IsNullOrEmpty(_settings.ModelId) && HotkeyCache.Instance.Hotkeys != null)
             {
                 HotkeyCache.Instance.Hotkeys.TryGetValue(_settings.ModelId, out var keys);
-                hotkeys = keys?.Select(s => new VTubeReference() {Id = s.Id, Name = s.Name}).ToList() ?? new ();
+                hotkeys = keys?.Select(s => new VTubeReference
+                {
+                    Id = s.Id, 
+                    Name = $"{s.Name} - {s.Type} ({s.File})",
+                }).ToList() ?? new ();
             }
 
             await Connection.SendToPropertyInspectorAsync(JObject.FromObject(new {Models = models, Hotkeys = hotkeys, Connected = VTubeStudioWebsocketClient.Instance.IsAuthed}));
@@ -143,7 +147,12 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
             if (_settings.ShowName && hotkeys.ContainsKey(_settings.ModelId))
             {
-                var title = hotkeys[_settings.ModelId]?.FirstOrDefault(s => s.Id == _settings.HotkeyId)?.Name ?? "";
+                var hotkey = hotkeys[_settings.ModelId]?.FirstOrDefault(s => s.Id == _settings.HotkeyId);
+                var title = hotkey?.Name ?? "";
+                
+                if (string.IsNullOrWhiteSpace(title) && hotkey != null)
+                    title = $"{hotkey.Type} ({hotkey.File})";
+                
                 await Connection.SetTitleAsync(Tools.SplitStringToFit(title, _titleParms));
             }
             
