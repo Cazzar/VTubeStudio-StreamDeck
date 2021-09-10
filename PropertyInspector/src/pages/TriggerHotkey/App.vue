@@ -74,5 +74,9 @@ export default {
 </script>
 
 <style>
-
+#hotkeyId {
+  width: 1vw;
+  padding-right: 26px;
+  text-overflow: ellipsis;
+}
 </style>

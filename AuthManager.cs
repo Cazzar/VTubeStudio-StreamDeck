@@ -14,9 +14,18 @@ namespace Cazzar.StreamDeck.VTubeStudio
             Logger.Instance.LogMessage(TracingLevel.INFO, "Registering events for GSM");
             //register events
             VTubeStudioWebsocketClient.SocketConnected += ConnectedToVts;
+            VTubeStudioWebsocketClient.OnAuthenticationResponse += OnAuthResponse;
             VTubeStudioWebsocketClient.OnTokenResponse += GotVtsToken;
         }
-        
+
+        private static void OnAuthResponse(object sender, ApiEventArgs<AuthenticationResponse> e)
+        {
+            if (e.Response.Authenticated) return;
+
+
+            VTubeStudioWebsocketClient.Instance.Send(new AuthenticateRequest());
+        }
+
         private static void GotVtsToken(object sender, ApiEventArgs<AuthenticateResponse> e)
         {
             GlobalSettingsManager.Instance.Settings.Token = e.Response.AuthToken;
