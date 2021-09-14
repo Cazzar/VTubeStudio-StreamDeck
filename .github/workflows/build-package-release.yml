@@ -1,9 +1,6 @@
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 env:
   plugin: dev.cazzar.streamdeck.vtubestudio
@@ -30,7 +27,7 @@ jobs:
         with:
           version: ${{ steps.previoustag.outputs.tag }}
     outputs:
-      ver: ${{ github.event_name == 'workflow_dispatch' && steps.semvers.outputs.minor || steps.semvers.outputs.patch }}
+      ver: ${{ steps.semvers.outputs.minor }}
 
 
   binary:
@@ -131,7 +128,7 @@ jobs:
         with:
           files: ./${{ env.plugin }}.streamDeckPlugin
           tag_name: ${{ needs.version.outputs.ver }}
-          prerelease: ${{ github.event_name != 'workflow_dispatch' }}
+          prerelease: true
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
