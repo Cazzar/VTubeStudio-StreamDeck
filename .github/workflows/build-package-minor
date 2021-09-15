@@ -1,0 +1,134 @@
+
+on:
+  workflow_dispatch:
+
+env:
+  plugin: dev.cazzar.streamdeck.vtubestudio
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
+
+      - name: Get previous release version
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0
+
+      - name: 'Get next minor version'
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+    outputs:
+      ver: ${{ steps.semvers.outputs.patch }}
+
+
+  binary:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build for windows
+        run: dotnet publish -c Release --runtime win-x64 -o build
+
+      - name: build for osx
+        run: dotnet publish -c Release --runtime osx-x64 -o build
+
+      
+      - uses: jossef/action-set-json-field@v1
+        with:
+          file: build/manifest.json
+          field: Version
+          value: ${{ needs.version.outputs.ver }}
+          
+      - name: print manifest
+        run: Get-Content build/manifest.json
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: binary-out
+          path: build/
+
+      - name: Update manifest
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: master
+          commit_message: Update manifest
+          file_pattern: manifest-unstable.json
+          skip_fetch: true
+
+  property-inspector:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build property inspector
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        working-directory: ./PropertyInspector
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: property-inspector
+          path: ./PropertyInspector/dist/
+
+  bundle:
+    runs-on: windows-latest
+    needs:
+      - binary
+      - property-inspector
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: binary-out
+          path: ${{ env.plugin }}.sdPlugin
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: property-inspector
+          path: ${{ env.plugin }}.sdPlugin/PropertyInspector
+
+      - name: download dist tool
+        run: |
+          Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutFile DistributionTool.zip
+          Expand-Archive DistributionTool.zip -DestinationPath .
+
+      - name: make sdPlugin package
+        run: ./DistributionTool.exe -b -i ${{ env.plugin }}.sdPlugin -o .
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: streamDeckPlugin
+          path: ${{ env.plugin }}.streamDeckPlugin
+
+  release:
+    runs-on: windows-latest
+    needs:
+      - bundle
+      - version
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: streamDeckPlugin
+          path: .
+      - name: "Release ${{ needs.version.outputs.ver }}"
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./${{ env.plugin }}.streamDeckPlugin
+          tag_name: ${{ needs.version.outputs.ver }}
+          prerelease: true
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
