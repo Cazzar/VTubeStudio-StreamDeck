@@ -86,7 +86,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 hotkeys = keys?.Select(s => new VTubeReference
                 {
                     Id = s.Id, 
-                    Name = $"{s.Name} - {s.Type} ({s.File})",
+                    Name = $"{s.Name} - ({s.ButtonTitle})",
                 }).ToList() ?? new ();
             }
 
@@ -149,9 +149,9 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             {
                 var hotkey = hotkeys[_settings.ModelId]?.FirstOrDefault(s => s.Id == _settings.HotkeyId);
                 var title = hotkey?.Name ?? "";
-                
+
                 if (string.IsNullOrWhiteSpace(title) && hotkey != null)
-                    title = $"{hotkey.Type} ({hotkey.File})";
+                    title = hotkey.ButtonTitle;
                 
                 await Connection.SetTitleAsync(Tools.SplitStringToFit(title, _titleParms));
             }
