@@ -64,6 +64,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                     VTubeStudioWebsocketClient.Instance.Reconnect();
                     break;
                 case "refresh":
+                    ModelCache.Instance.Update();
                     await SendDataToClient();
                     break;
             }
@@ -71,8 +72,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         private async void PropertyInspectorDidAppear(object sender, SDEventReceivedEventArgs<PropertyInspectorDidAppear> e)
         {
-            Logger.Instance.LogMessage(TracingLevel.INFO, nameof(PropertyInspectorDidAppear));
-
             await SendDataToClient();
         }
 
