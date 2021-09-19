@@ -63,7 +63,8 @@ namespace Cazzar.StreamDeck.VTubeStudio
         public void Dispose()
         {
             _updateTimer.Dispose();
-        } }
+        }
+    }
 
     public class ModelCacheUpdatedEventArgs : EventArgs
     {
