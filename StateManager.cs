@@ -10,7 +10,6 @@ namespace Cazzar.StreamDeck.VTubeStudio
     {
         public static string CurrentModelId { get; private set; }
 
-        [EventRegistration]
         public static void RegisterEvents()
         {
             VTubeStudioWebsocketClient.OnCurrentModelInformation += VTubeStudioWebsocketClientOnOnCurrentModelInformation;

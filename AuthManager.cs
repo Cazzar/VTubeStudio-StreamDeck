@@ -8,7 +8,6 @@ namespace Cazzar.StreamDeck.VTubeStudio
 {
     public class AuthManager
     {
-        [EventRegistration]
         public static void RegisterEvents()
         {
             Logger.Instance.LogMessage(TracingLevel.INFO, "Registering events for GSM");

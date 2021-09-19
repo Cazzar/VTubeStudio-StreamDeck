@@ -18,7 +18,7 @@ namespace Cazzar.StreamDeck.VTubeStudio
 {
     public class ModelCache : IDisposable
     {
-        public static ModelCache Instance { get; private set; } = new ModelCache();
+        public static ModelCache Instance { get; private set; } = new();
         
         public IEnumerable<Model> Models => _models;
         

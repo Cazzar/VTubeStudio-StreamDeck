@@ -26,7 +26,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
 
         static VTubeStudioWebsocketClient()
         {
-            EventRegistrar.CallAll();
+            // EventRegistrar.CallAll();
         }
 
         private VTubeStudioWebsocketClient()

@@ -18,6 +18,9 @@ namespace Cazzar.StreamDeck.VTubeStudio
             // Test().GetAwaiter().GetResult();
             // while (!System.Diagnostics.Debugger.IsAttached) { System.Threading.Thread.Sleep(100); }
             
+            AuthManager.RegisterEvents();
+            StateManager.RegisterEvents();
+            
             SDWrapper.Run(args);
         }
     }
