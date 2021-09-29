@@ -29,6 +29,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Models
                 HotkeyAction.CalibrateCam => "Calibrate Camera",
                 HotkeyAction.ChangeVTSModel => File.TrimEnd(".vtube.json"),
                 HotkeyAction.TakeScreenshot => "Take Screenshot",
+                HotkeyAction.ScreenColorOverlay => "Screen Color Overlay",
                 _ => "Unknown",
             };
     }
