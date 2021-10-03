@@ -10,7 +10,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
         [JsonProperty("valuesAreRelativeToModel")] public bool? RelativeMove { get; set; }
         [JsonProperty("positionX")] public double? PositionX { get; set; }
         [JsonProperty("positionY")] public double? PositionY { get; set; }
-        [JsonProperty("rotation")] public int? Rotation { get; set; }
+        [JsonProperty("rotation")] public double? Rotation { get; set; }
         [JsonProperty("size")] public int? Size { get; set; }
         
         public override RequestType MessageType { get; } = RequestType.MoveModelRequest;

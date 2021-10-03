@@ -44,6 +44,21 @@
       "Tooltip": "VTubeStudio [Change Model]",
       "UUID": "dev.cazzar.vtubestudio.movemodel",
       "PropertyInspectorPath": "PropertyInspector/MoveModel.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Scale Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Scale Model]",
+      "UUID": "dev.cazzar.vtubestudio.scalemodel",
+      "PropertyInspectorPath": "PropertyInspector/ScaleModel.html"
     }
   ],
   "Author": "Cazzar",
