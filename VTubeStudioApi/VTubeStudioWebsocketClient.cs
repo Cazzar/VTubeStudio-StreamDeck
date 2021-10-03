@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Net.Http.Headers;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BarRaider.SdTools;
@@ -18,11 +19,14 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public static VTubeStudioWebsocketClient Instance { get; } = new();
 
         public bool IsAuthed => _authed && _ws.IsAlive;
-        public bool WsIsAlive => _ws.IsAlive;
+        public bool WsIsAlive => _ws?.IsAlive ?? false;
 
         private bool _tryingToConnect = false;
         private WebSocket _ws = null;
         private bool _authed = false;
+
+        private string _host = null;
+        private ushort? _port = null;
 
         static VTubeStudioWebsocketClient()
         {
@@ -39,7 +43,15 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             // Logger.Instance.LogMessage(TracingLevel.INFO, $">>> {data}");
             _ws.Send(data);
         }
-
+        
+        public void SetConnection(string host, ushort port)
+        {
+            if ((host, port) == (_host, _port)) return;
+            
+            _host = host;
+            _port = port;
+            Connect();
+        }
 
         public void ConnectIfNeeded()
         {
@@ -59,7 +71,10 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         private void Connect()
         {
             _authed = false;
-            _ws = new("ws://localhost:8001");
+            if (_host == null || _port == null)
+                return;
+            
+            _ws = new(new UriBuilder() { Host = _host, Port = _port.Value, Scheme = "ws" }.Uri.ToString());
             SetupEvents();
             _ws.Connect();
         }

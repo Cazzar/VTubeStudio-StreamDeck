@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using BarRaider.SdTools;
@@ -13,9 +15,9 @@ using Newtonsoft.Json.Linq;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions
 {
     [PluginActionId("dev.cazzar.vtubestudio.triggerhotkey")]
-    public class TriggerHotkeyAction : PluginBase
+    public class TriggerHotkeyAction : BaseAction<TriggerHotkeyAction.PluginSettings>
     {
-        private class PluginSettings
+        public class PluginSettings
         {
             [JsonProperty("modelId")]
             public string ModelId { get; set; } = string.Empty;
@@ -27,164 +29,86 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             public bool ShowName { get; set; } = true;
         }
         
-        private readonly PluginSettings _settings;
-        private TitleParameters _titleParms;
-        
         public TriggerHotkeyAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
-            //Ensure global settings is loaded;
-            GlobalSettingsManager.Instance.Load();
-            VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
-            
-            if (payload.Settings == null || payload.Settings.Count == 0)
-                _settings = new PluginSettings();
-            else
-                _settings = payload.Settings.ToObject<PluginSettings>();
-            
             ModelCache.Instance.ModelCacheUpdated += ModelCacheUpdate;
             HotkeyCache.Instance.Updated += HotkeyCacheUpdated;
-            Connection.OnTitleParametersDidChange += TitleParamsUpdated;
-            Connection.OnPropertyInspectorDidAppear += PropertyInspectorDidAppear;
-            Connection.OnSendToPlugin += DataFromPropertyInspector;
         }
 
-        private async void DataFromPropertyInspector(object sender, SDEventReceivedEventArgs<SendToPlugin> e)
+        protected override void Pressed(KeyPayload payload)
         {
-            var pl = e.Event.Payload.ToObject<PluginPayload>();
-
-            if (pl == null)
-            {
-                Logger.Instance.LogMessage(TracingLevel.INFO, "Payload is null");
-                return;
-            }
-
-            switch (pl.Command.ToLower())
-            {
-                case "force-reconnect":
-                    VTubeStudioWebsocketClient.Instance.Reconnect();
-                    break;
-                case "refresh":
-                    ModelCache.Instance.Update();
-                    await SendDataToClient();
-                    break;
-            }
-        }
-
-        private async void PropertyInspectorDidAppear(object sender, SDEventReceivedEventArgs<PropertyInspectorDidAppear> e)
-        {
-            await SendDataToClient();
-        }
-
-        private async Task SendDataToClient()
-        {
-            var models = ModelCache.Instance.Models.Select(s => new VTubeReference() {Id = s.Id, Name = s.Name}).ToList();
-            List<VTubeReference> hotkeys = new ();
-            if (!string.IsNullOrEmpty(_settings.ModelId) && HotkeyCache.Instance.Hotkeys != null)
-            {
-                HotkeyCache.Instance.Hotkeys.TryGetValue(_settings.ModelId, out var keys);
-                hotkeys = keys?.Select(s => new VTubeReference
-                {
-                    Id = s.Id, 
-                    Name = $"{s.Name} - ({s.ButtonTitle})",
-                }).ToList() ?? new ();
-            }
-
-            await Connection.SendToPropertyInspectorAsync(JObject.FromObject(new {Models = models, Hotkeys = hotkeys, Connected = VTubeStudioWebsocketClient.Instance.IsAuthed}));
-        }
-
-        private async void HotkeyCacheUpdated(object sender, HotkeyCacheUpdatedEventArgs e)
-        {
-            await SendDataToClient();
-        }
-
-        private void TitleParamsUpdated(object sender, SDEventReceivedEventArgs<TitleParametersDidChange> e)
-        {
-            _titleParms = e?.Event?.Payload?.TitleParameters;
-        }
-
-        private async void ModelCacheUpdate(object sender, ModelCacheUpdatedEventArgs e)
-        {
-            await SendDataToClient();
-        }
-
-        private async Task SaveSettings()
-        {
-            var settings = JObject.FromObject(_settings);
-            await Connection.SetSettingsAsync(settings);
-        }
-
-        public override async void KeyPressed(KeyPayload payload)
-        {
-            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
-            {
-                await Connection.ShowAlert();
-                return;
-            }
-            
-            if (string.IsNullOrEmpty(_settings.HotkeyId))
+            if (string.IsNullOrEmpty(Settings.HotkeyId))
             {
                 Logger.Instance.LogMessage(TracingLevel.INFO, "Tried to press button but hotkey ID is null");
                 return;
             }
-            
-            VTubeStudioWebsocketClient.Instance.Send(new HotkeyTriggerRequest(_settings.HotkeyId));
+
+            Vts.Send(new HotkeyTriggerRequest(Settings.HotkeyId));
         }
 
-        public override void KeyReleased(KeyPayload payload)
+        protected override void Released(KeyPayload payload)
         {
         }
 
-        public override　async void ReceivedSettings(ReceivedSettingsPayload payload)
+        protected override object GetClientData()
         {
-            var showName = _settings.ShowName;
-            var modelId = _settings.ModelId;
-            Tools.AutoPopulateSettings(_settings, payload.Settings);
-
-            if (showName != _settings.ShowName && !_settings.ShowName)
-                await Connection.SetTitleAsync(null);
-            
-            await UpdateTitle();
-        }
-
-        private async Task UpdateTitle()
-        {
-            var hotkeys = HotkeyCache.Instance.Hotkeys;
-
-            if (_settings.ShowName && hotkeys.ContainsKey(_settings.ModelId))
+            var models = ModelCache.Instance.Models.Select(s => new VTubeReference() { Id = s.Id, Name = s.Name }).ToList();
+            List<VTubeReference> hotkeys = new();
+            if (!string.IsNullOrEmpty(Settings.ModelId) && HotkeyCache.Instance.Hotkeys != null)
             {
-                var hotkey = hotkeys[_settings.ModelId]?.FirstOrDefault(s => s.Id == _settings.HotkeyId);
-                var title = hotkey?.Name ?? "";
-
-                if (string.IsNullOrWhiteSpace(title) && hotkey != null)
-                    title = hotkey.ButtonTitle;
-                
-                await Connection.SetTitleAsync(Tools.SplitStringToFit(title, _titleParms));
+                HotkeyCache.Instance.Hotkeys.TryGetValue(Settings.ModelId, out var keys);
+                hotkeys = keys?.Select(s => new VTubeReference { Id = s.Id, Name = $"{s.Name} - ({s.ButtonTitle})", }).ToList() ?? new();
             }
-            
-            await SendDataToClient();
+
+            return new { Models = models, Hotkeys = hotkeys, Connected = VTubeStudioWebsocketClient.Instance.IsAuthed };
         }
 
-        public override void ReceivedGlobalSettings(ReceivedGlobalSettingsPayload payload)
+        public override void Refresh(PluginPayload pl)
         {
+            ModelCache.Instance.Update();
+            base.Refresh(pl);
         }
 
-        public override async void OnTick()
+        public override void ReceivedSettings(ReceivedSettingsPayload payload)
         {
-            await UpdateTitle();
+            var showName = Settings.ShowName;
+            base.ReceivedSettings(payload);
+
+            if (showName != Settings.ShowName && !Settings.ShowName) Title = null;
+            if (Settings.ShowName) Title = GetTitle();
+        }
+
+        public override void OnTick()
+        {
+            base.OnTick();
+
+            if (!Settings.ShowName) return;
+            Title = GetTitle();
+        }
+
+        private string GetTitle()
+        {
+            if (string.IsNullOrEmpty(Settings.ModelId)) return "";
             
-            await SendDataToClient();
+            var hotkeys = HotkeyCache.Instance.Hotkeys;
+            if (!hotkeys.ContainsKey(Settings.ModelId)) return "";
             
-            VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
+            var hotkey = hotkeys[Settings.ModelId]?.FirstOrDefault(s => s.Id == Settings.HotkeyId);
+            var title = hotkey?.ButtonTitle ?? "";
+
+            if (string.IsNullOrWhiteSpace(title) && hotkey != null)
+                title = hotkey.ButtonTitle;
+            return title;
         }
 
         public override void Dispose()
         {
+            base.Dispose();
             ModelCache.Instance.ModelCacheUpdated -= ModelCacheUpdate;
             HotkeyCache.Instance.Updated -= HotkeyCacheUpdated;
-            Connection.OnTitleParametersDidChange -= TitleParamsUpdated;
-            Connection.OnPropertyInspectorDidAppear -= PropertyInspectorDidAppear;
-            Connection.OnSendToPlugin -= DataFromPropertyInspector;
-
         }
+
+        private async void HotkeyCacheUpdated(object sender, HotkeyCacheUpdatedEventArgs e) => await UpdateClient();
+        private async void ModelCacheUpdate(object sender, ModelCacheUpdatedEventArgs e) => await UpdateClient();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Dataflow;
 using BarRaider.SdTools;
@@ -13,6 +14,8 @@ namespace Cazzar.StreamDeck.VTubeStudio
     public class GlobalSettings
     {
         public string Token { get; set; } = string.Empty;
+        public string Host { get; set; } = "127.0.0.1";
+        public ushort? Port { get; set; } = 8001;
     }
 
     public class GlobalSettingsManager
@@ -56,6 +59,10 @@ namespace Cazzar.StreamDeck.VTubeStudio
 
             if (current.Token == Settings.Token && !string.IsNullOrEmpty(Settings.Token)) return;
             
+            if (current.Host != Settings.Host || current.Port != Settings.Port)
+                VTubeStudioWebsocketClient.Instance.SetConnection(Settings.Host ?? "127.0.0.1", Settings.Port ?? 8001);
+
+            
             Logger.Instance.LogMessage(TracingLevel.INFO, "Token changed!");
             TokenChanged?.Invoke(this, Settings);
         }
@@ -79,6 +86,16 @@ namespace Cazzar.StreamDeck.VTubeStudio
         public void RequestGlobalSettings()
         {
             BarRaider.SdTools.GlobalSettingsManager.Instance.RequestGlobalSettings();
+        }
+
+        public void SetVts(string host, ushort port)
+        {
+            Settings.Host = host;
+            Settings.Port = port;
+
+            VTubeStudioWebsocketClient.Instance.SetConnection(host, port);
+            
+            SaveSettings();
         }
     }
 }

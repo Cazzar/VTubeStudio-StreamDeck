@@ -153,10 +153,18 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         }
 
         [PluginCommand("refresh")]
-        public async void Refresh(PluginPayload pl) => await UpdateClient();
+        public virtual async void Refresh(PluginPayload pl) => await UpdateClient();
 
         [PluginCommand("force-reconnect")]
         public void ForceReconnect(PluginPayload pl) => Vts.Reconnect();
+
+        [PluginCommand("set-vtsinfo")]
+        public void SetVtsInfo(PluginPayload pl)
+        {
+            string host = pl.Payload.host;
+            ushort port = pl.Payload.port;
+            GlobalSettingsManager.Instance.SetVts(host, port);
+        }
 
         protected abstract void Pressed(KeyPayload payload);
         protected abstract void Released(KeyPayload payload);

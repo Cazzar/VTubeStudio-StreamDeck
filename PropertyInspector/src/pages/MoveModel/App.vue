@@ -1,35 +1,37 @@
 <template>
 <NotConnected v-if="!websocketConnected" />
-<div v-if="websocketConnected" class="sdpi-item" id="select_model">
+<div v-else>
+  <div class="sdpi-item" id="select_model">
     <div class="sdpi-item-label">Duration (seconds)</div>
     <span class="sdpi-item-value">
         <input type="number" step="0.1" min="0" max="2" id="seconds" required v-model="settings.seconds"/>
     </span>
-</div>
-<div v-if="websocketConnected" type="checkbox" class="sdpi-item">
+  </div>
+  <div type="checkbox" class="sdpi-item">
     <div class="sdpi-item-label">Options</div>
     <input class="sdpi-item-value" id="showName" type="checkbox" v-model="settings.relative">
     <label for="showName"><span></span>Model Moves are relative</label>
-</div>
-<div v-if="websocketConnected" class="sdpi-item">
+  </div>
+  <div class="sdpi-item">
     <div class="sdpi-item-label">Movement</div>
     <CoordInput v-if="gotSettings"
       :relative="settings.relative"
       v-model:x="settings.posX"
       v-model:y="settings.posY"
     />
-</div>
-<div class="sdpi-item">
+  </div>
+  <div class="sdpi-item">
     <div class="sdpi-item-label">Rotation</div>
     <span class="sdpi-item-value">
         <input type="number" min="-360" max="360" step="0.1" id="rotation" v-model="settings.rotation"/>
     </span>
-</div>
-<div class="sdpi-item">
+  </div>
+  <div class="sdpi-item">
      <div class="sdpi-item-label">Tools</div>
      <button class="sdpi-item-value" id="force-refresh" @click="sendAction('refresh', null)">Refresh</button>
      <button v-if="!websocketConnected" class="sdpi-item-value" @click="sendAction('force-reconnect', null)" id="force-reconnect">Reconnect</button>
      <span v-else class="sdpi-item-value">VTS Connected!</span>
+  </div>
 </div>
 </template>
 
