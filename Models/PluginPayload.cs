@@ -2,7 +2,7 @@
 
 namespace Cazzar.StreamDeck.VTubeStudio.Models
 {
-    internal class PluginPayload
+    public class PluginPayload
     {
         [JsonProperty("command")]
         public string Command { get; set; }
