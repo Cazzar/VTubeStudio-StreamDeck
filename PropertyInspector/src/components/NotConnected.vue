@@ -2,7 +2,7 @@
   <div class="warning">
     <p>Not connected to VTubeStudio!</p>
     <p>Check your setting in VTube Studio and make sure the plugin API is enabled</p>
-    <p><a @click="openHelp">Click here</a> to open the installation</p>
+    <p><a @click="openHelp">Click here</a> to open the installation guide</p>
     <p>If the plugin API is not on the default port (8001) you can update it below and click "connect"</p>
   </div>
   <div v-if="connected">
