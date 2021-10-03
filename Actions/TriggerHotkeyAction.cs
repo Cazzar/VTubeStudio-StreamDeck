@@ -113,8 +113,14 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await Connection.SetSettingsAsync(settings);
         }
 
-        public override void KeyPressed(KeyPayload payload)
+        public override async void KeyPressed(KeyPayload payload)
         {
+            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
+            {
+                await Connection.ShowAlert();
+                return;
+            }
+            
             if (string.IsNullOrEmpty(_settings.HotkeyId))
             {
                 Logger.Instance.LogMessage(TracingLevel.INFO, "Tried to press button but hotkey ID is null");
@@ -169,9 +175,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await SendDataToClient();
             
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
-            
-            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
-                await Connection.ShowAlert();
         }
 
         public override void Dispose()

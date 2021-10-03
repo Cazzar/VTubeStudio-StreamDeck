@@ -109,8 +109,14 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             return Connection.SetSettingsAsync(JObject.FromObject(_settings));
         }
 
-        public override void KeyPressed(KeyPayload payload)
+        public override async void KeyPressed(KeyPayload payload)
         {
+            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
+            {
+                await Connection.ShowAlert();
+                return;
+            }
+            
             Logger.Instance.LogMessage(TracingLevel.INFO, "Key Pressed");
 
             if (string.IsNullOrEmpty(_settings.ModelId))
@@ -158,9 +164,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
             if (_settings.ModelId != null && _settings.ModelId == StateManager.CurrentModelId)
                 await Connection.ShowOk();
-
-            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
-                await Connection.ShowAlert();
         }
 
         public override void Dispose()

@@ -96,8 +96,14 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await Connection.SetSettingsAsync(settings);
         }
 
-        public override void KeyPressed(KeyPayload payload)
+        public override async void KeyPressed(KeyPayload payload)
         {
+            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
+            {
+                await Connection.ShowAlert();
+                return;
+            }
+
             VTubeStudioWebsocketClient.Instance.Send(new MoveModelRequest()
             {
                 PositionX = _settings.PosX,
@@ -135,9 +141,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await SendDataToClient();
             
             VTubeStudioWebsocketClient.Instance.ConnectIfNeeded();
-            
-            if (!VTubeStudioWebsocketClient.Instance.IsAuthed)
-                await Connection.ShowAlert();
         }
 
         public override void Dispose()
