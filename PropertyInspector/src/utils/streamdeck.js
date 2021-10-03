@@ -149,6 +149,17 @@ export default class StreamDeck {
 
         this.streamDeckWebsocket.send(JSON.stringify(message))
     }
+
+    openUrl(url) {
+        let message = {
+            "event": "openUrl",
+            "payload": {
+                "url": url
+            }
+        }
+
+        this.streamDeckWebsocket.send(JSON.stringify(message))
+    }
 }
 
 const ELGEvents = {

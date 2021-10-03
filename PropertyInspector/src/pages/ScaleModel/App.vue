@@ -1,28 +1,9 @@
 <template>
 <NotConnected v-if="!websocketConnected" />
-<div v-if="websocketConnected" class="sdpi-item" id="select_model">
-    <div class="sdpi-item-label">Duration (seconds)</div>
-    <span class="sdpi-item-value">
-        <input type="number" step="0.1" min="0" max="2" id="seconds" required v-model="settings.seconds"/>
-    </span>
-</div>
-<div v-if="websocketConnected" type="checkbox" class="sdpi-item">
-    <div class="sdpi-item-label">Options</div>
-    <input class="sdpi-item-value" id="showName" type="checkbox" v-model="settings.relative">
-    <label for="showName"><span></span>Model Moves are relative</label>
-</div>
 <div v-if="websocketConnected" class="sdpi-item">
-    <div class="sdpi-item-label">Movement</div>
-    <CoordInput v-if="gotSettings"
-      :relative="settings.relative"
-      v-model:x="settings.posX"
-      v-model:y="settings.posY"
-    />
-</div>
-<div class="sdpi-item">
-    <div class="sdpi-item-label">Rotation</div>
+    <div class="sdpi-item-label">Size ({{ settings.size ?? '0' }})</div>
     <span class="sdpi-item-value">
-        <input type="number" min="-360" max="360" step="0.1" id="rotation" v-model="settings.rotation"/>
+        <input type="range" min="-100" max="100" step="0.1" v-model="settings.size">
     </span>
 </div>
 <div class="sdpi-item">
@@ -34,27 +15,20 @@
 </template>
 
 <script>
-import CoordInput from "../../components/CoordInput.vue";
 import NotConnected from "../../components/NotConnected.vue";
 
 export default {
   name: 'App',
   components: {
-    CoordInput,
     NotConnected
   },
   data() {
     return {
       models: [],
       websocketConnected: false,
-      gotSettings: false,
       settings: {
-        posX: 0,
-        posY: 0,
-        seconds: 0,
-        rotation: null,
-        relative: true,
-      },
+        size: 0,
+      }
     }
   },
   watch: {
@@ -74,12 +48,9 @@ export default {
   },
   mounted() {
     this.$store.state.streamDeck.on('didReceiveSettings', settings => console.log(settings))
-    this.$store.state.streamDeck.on('connected', payload => {
-      this.settings = payload?.payload?.settings ?? this.settings
-      this.gotSettings = true
-      console.log(payload?.payload?.settings)
-    })
+    this.$store.state.streamDeck.on('connected', payload => this.settings = payload?.payload?.settings ?? this.settings)
     this.$store.state.streamDeck.on('sendToPropertyInspector', e => {
+      this.models = e.Models ?? [];
       this.websocketConnected = e.Connected ?? false
     })
   },

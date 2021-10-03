@@ -10,12 +10,12 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         public class PluginSettings
         {
             [DataMember(Name = "size")]
-            public float Size { get; set; }
+            public float Size { get; set; } = 0;
         }
 
         public ScaleModelAction(ISDConnection connection, InitialPayload payload) : base(connection, payload) { }
 
-        protected override void Pressed(KeyPayload payload) => Vts.Send(new MoveModelRequest() { Rotation = Settings.Size, });
+        protected override void Pressed(KeyPayload payload) => Vts.Send(new MoveModelRequest() { Size = Settings.Size, });
 
         protected override void Released(KeyPayload payload) { }
 

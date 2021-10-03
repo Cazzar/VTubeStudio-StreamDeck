@@ -1,5 +1,6 @@
 <template>
-<div class="sdpi-item" id="select_model">
+<NotConnected v-if="!websocketConnected" />
+<div v-if="websocketConnected" class="sdpi-item" id="select_model">
     <div class="sdpi-item-label">Model</div>
     <select class="sdpi-item-value select" id="hotkeyId" v-model="settings.modelId">
       <option v-for="model in models" v-bind:value="model.Id" v-bind:key="model.Id">
@@ -7,7 +8,7 @@
       </option>
     </select>
 </div>
-<div type="checkbox" class="sdpi-item">
+<div  v-if="websocketConnected" type="checkbox" class="sdpi-item">
     <div class="sdpi-item-label">Options</div>
     <input class="sdpi-item-value" id="showName" type="checkbox" v-model="settings.showName">
     <label for="showName"><span></span>Show model name on key</label>
@@ -21,10 +22,12 @@
 </template>
 
 <script>
+import NotConnected from "../../components/NotConnected.vue";
 
 export default {
   name: 'App',
   components: {
+    NotConnected
   },
   data() {
     return {
