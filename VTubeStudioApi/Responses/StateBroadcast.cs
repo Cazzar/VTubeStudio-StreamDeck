@@ -1,19 +1,20 @@
 ﻿using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses
 {
     public class StateBroadcast
     {
-        [DataMember(Name = "active")]
+        [JsonProperty("active")]
         public bool IsActive { get; set; }
 
-        [DataMember(Name = "port")]
+        [JsonProperty("port")]
         public ushort Port { get; set; }
         
-        [DataMember(Name = "instanceId")]
+        [JsonProperty("instanceId")]
         public string InstanceId { get; set; }
         
-        [DataMember(Name = "windowTitle")]
+        [JsonProperty("windowTitle")]
         public string WindowTitle { get; set; }
     }
 }

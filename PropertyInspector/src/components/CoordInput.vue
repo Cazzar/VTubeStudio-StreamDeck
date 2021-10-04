@@ -1,8 +1,8 @@
 <template>
   <div id="container">
-    <canvas width="220" height="122.50" ref="canvas" @click="canvasClick" @mousemove="mouseMove" id="position"></canvas>
-    <input type="range" min="-1" max="1" v-model="position.y" step="0.001" orient="vertical">
-    <input type="range" min="-1" max="1" v-model="position.x" step="0.001">
+    <canvas width="200" height="111.36" ref="canvas" @click="canvasClick" @mousemove="mouseMove" id="position"></canvas>
+    <!-- <input type="range" min="-1" max="1" v-model="position.y" step="0.001" orient="vertical">
+    <input type="range" min="-1" max="1" v-model="position.x" step="0.001"> -->
     <svg xmlns="http://www.w3.org/2000/svg" id="reset" @click="reset" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
     </svg>
@@ -46,8 +46,6 @@ export default {
     }
   },
   mounted() {
-    console.log(`New Position: ${this.position.x}/${this.x} ${this.position.y}/${this.y}`)
-
     this.context = this.$refs.canvas.getContext("2d");
     this.updateCanvas();
   },
@@ -55,7 +53,6 @@ export default {
     relative() { this.updateCanvas() },
     position: {
       handler() {
-        console.log(`New Position: ${this.position.x} ${this.position.y}`)
         this.updateCanvas()
       },
       deep: true,
@@ -66,6 +63,12 @@ export default {
     'position.y'(newValue) {
       this.$emit('update:y', newValue);
     },
+    x(newValue) {
+      this.position.x = newValue;
+    },
+    y(newValue) {
+      this.position.y = newValue;
+    }
   },
   methods: {
     reset() {

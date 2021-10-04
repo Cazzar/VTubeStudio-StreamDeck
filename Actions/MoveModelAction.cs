@@ -8,6 +8,7 @@ using BarRaider.SdTools.Wrappers;
 using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
+using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using streamdeck_client_csharp.Events;
@@ -30,14 +31,34 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             public double? PosY { get; set; } = 0;
 
             [JsonProperty("rotation")]
-            public int? Rotation { get; set; } = 0;
+            public double? Rotation { get; set; } = 0;
+
+            [JsonProperty("size")]
+            public double? Size { get; set; } = null;
 
             [JsonProperty("relative")]
             public bool Relative { get; set; } = true;
         }
         
+        private string _requestId = string.Empty;
+        
         public MoveModelAction(ISDConnection connection, InitialPayload payload) : base(connection, payload)
         {
+            VTubeStudioWebsocketClient.OnCurrentModelInformation += CurrentModelInformation;
+        }
+
+        private async void CurrentModelInformation(object sender, ApiEventArgs<CurrentModelResponse> e)
+        {
+            if (string.IsNullOrEmpty(e.RequestId) || e.RequestId != _requestId) return; //I don't care about this request.
+
+            var pos = e.Response.ModelPosition;
+            Settings.PosX = pos.X;
+            Settings.PosY = pos.Y;
+            Settings.Rotation = pos.Rotation;
+            Settings.Size = pos.Size;
+            Settings.Relative = false;
+            
+            await SaveSettings();
         }
 
         protected override void Pressed(KeyPayload payload)
@@ -48,7 +69,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 PositionY = Settings.PosY,
                 RelativeMove =  Settings.Relative,
                 Rotation = Settings.Rotation,
-                Size = null,
+                Size = Settings.Size,
                 TimeInSeconds = Settings.Seconds,
             });
         }
@@ -61,6 +82,19 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             Connected = VTubeStudioWebsocketClient.Instance.IsAuthed,
         };
+
+        [PluginCommand("get-params")]
+        public virtual void GetModel(PluginPayload pl)
+        {
+            _requestId = Guid.NewGuid().ToString();
+            Vts.Send(new CurrentModelRequest(), _requestId);
+        }
+
+        public override void Dispose()
+        {
+            VTubeStudioWebsocketClient.OnCurrentModelInformation -= CurrentModelInformation;
+            base.Dispose();
+        }
     }
 }
 

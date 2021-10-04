@@ -36,6 +36,10 @@ export default {
       this.$store.state.streamDeck.requestGlobalSettings()
       this.connected = true;
     })
+    if (this.$store.state.streamDeck?.streamDeckWebsocket) {
+      this.$store.state.streamDeck.requestGlobalSettings();
+      this.connected = true;
+    }
   },
   methods: {
     openHelp() { this.$store.state.streamDeck.openUrl("https://github.com/Cazzar/VTubeStudio-StreamDeck/wiki/Installation#configuring-vtubestudio") },
