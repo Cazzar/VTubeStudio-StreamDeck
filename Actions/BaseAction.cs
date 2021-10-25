@@ -23,7 +23,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
     {
         protected VTubeStudioWebsocketClient Vts => VTubeStudioWebsocketClient.Instance;
         protected T Settings;
-        private TitleParameters _titleParms;
         private readonly Dictionary<string, MethodInfo> _commands = new ();
 
         private string _title;
@@ -33,7 +32,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             set
             {
                 _title = value;
-                Connection.SetTitleAsync(value is null ? null : Tools.SplitStringToFit(value, _titleParms));
+                Connection.SetTitleAsync(value is null ? null : value);
             }
         }
 
@@ -51,7 +50,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             
             Connection.OnSendToPlugin += DataFromPropertyInspector;
             Connection.OnPropertyInspectorDidAppear += PropertyInspectorDidAppear;
-            Connection.OnTitleParametersDidChange += TitleParamsUpdated;
         }
 
         private async void PropertyInspectorDidAppear(object sender, SDEventReceivedEventArgs<PropertyInspectorDidAppear> e)
@@ -59,11 +57,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             await UpdateClient();
         }
         
-        private void TitleParamsUpdated(object sender, SDEventReceivedEventArgs<TitleParametersDidChange> e)
-        {
-            _titleParms = e?.Event?.Payload?.TitleParameters;
-        }
-
         private void LoadCommands()
         {
             foreach (var methodInfo in this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
@@ -138,7 +131,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             Connection.OnSendToPlugin -= DataFromPropertyInspector;
             Connection.OnPropertyInspectorDidAppear -= PropertyInspectorDidAppear;
-            Connection.OnTitleParametersDidChange -= TitleParamsUpdated;
         }
 
         protected async Task UpdateClient()
