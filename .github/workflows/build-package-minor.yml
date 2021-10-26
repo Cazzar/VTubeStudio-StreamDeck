@@ -37,18 +37,17 @@ jobs:
         uses: actions/checkout@v2
 
       - name: build for windows
-        run: dotnet publish -c Release --runtime win-x64 -o build
+        run: dotnet publish -c Release --runtime win-x64 -o build streamdeck-vtubestudio
 
       - name: build for osx
-        run: dotnet publish -c Release --runtime osx-x64 -o build
+        run: dotnet publish -c Release --runtime osx-x64 -o build streamdeck-vtubestudio
 
-      
       - uses: jossef/action-set-json-field@v1
         with:
           file: build/manifest.json
           field: Version
           value: ${{ needs.version.outputs.ver }}
-          
+
       - name: print manifest
         run: Get-Content build/manifest.json
 
