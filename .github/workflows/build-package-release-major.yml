@@ -72,8 +72,6 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-      - name:
-
       - name: build property inspector
         run: |
           yarn install --frozen-lockfile
