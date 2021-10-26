@@ -74,12 +74,12 @@ jobs:
         run: |
           yarn install --frozen-lockfile
           yarn build
-        working-directory: ./vtubestudio-streamdeck/PropertyInspector
+        working-directory: ./streamdeck-vtubestudio/PropertyInspector
 
       - uses: actions/upload-artifact@v2
         with:
           name: property-inspector
-          path: ./vtubestudio-streamdeck/PropertyInspector/dist/
+          path: ./streamdeck-vtubestudio/PropertyInspector/dist/
 
   bundle:
     runs-on: windows-latest
