@@ -1,0 +1,84 @@
+﻿
+using System.IO;
+using System.Threading.Tasks;
+using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Hosting;
+using NLog.Extensions.Logging;
+using StreamDeckLib;
+using StreamDeckLib.Extensions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+
+namespace Cazzar.StreamDeck.VTubeStudio
+{
+    class Program
+    {
+        // static void Main(string[] args)
+        // {
+        //     // Test().GetAwaiter().GetResult();
+        //     // DiscoveryListener.ServersUpdated += (sender, eventArgs) =>
+        //     // {
+        //     //     foreach (var (id, server) in eventArgs.Servers)
+        //     //     {
+        //     //         Console.WriteLine($"Found server: {id} at {server.IpAddress}:{server.Port} window name: {server.WindowTitle} ({server.IsActive})");
+        //     //     }
+        //     // };
+        //     // var foo = DiscoveryListener.Instance.GetType();
+        //     // while (!System.Diagnostics.Debugger.IsAttached) { System.Threading.Thread.Sleep(100); }
+        //     
+        //     // AuthManager.RegisterEvents();
+        //     // StateManager.RegisterEvents();
+        //     //
+        //     // SDWrapper.Run(args);
+        // }
+        public static async Task Main(string[] args)
+        {
+            // while (!System.Diagnostics.Debugger.IsAttached) { System.Threading.Thread.Sleep(100); }
+            
+            // #if DEBUG
+            // args = await File.ReadAllLinesAsync(@"C:\Users\me\AppData\Roaming\Elgato\StreamDeck\Plugins\dev.cazzar.streamdeck.vtubestudio.sdPlugin\argv.txt");
+            // #endif
+            //
+            var hostBuilder = CreateHostBuilder(args);
+            var build = hostBuilder.Build();
+            var sp = build.Services;
+            
+            await build.RunAsync();
+        }
+
+        private static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            var config = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory()) //From NuGet Package Microsoft.Extensions.Configuration.Json
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
+
+
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureStreamDeckToolkit(args)
+                .ConfigureServices(
+                    (hostContext, services) =>
+                    {
+                        services.AddStreamDeck(hostContext.Configuration);
+                        services.AddSingleton<VTubeStudioWebsocketClient>();
+                        services.AddSingleton<IAuthManger, AuthManager>();
+                        services.AddSingleton<GlobalSettingsManager>();
+                        services.AddSingleton<IGlobalSettingsHandler>((sp) => sp.GetService<GlobalSettingsManager>()!);
+                        services.AddSingleton<HotkeyCache>();
+                        services.AddSingleton<ModelCache>();
+                        services.AddLogging(
+                            logging =>
+                            {
+                                logging.ClearProviders();
+                                logging.SetMinimumLevel(LogLevel.Trace);
+                                logging.AddNLog(config);
+                            }
+                        );
+                    }
+                );
+        }
+    }
+}

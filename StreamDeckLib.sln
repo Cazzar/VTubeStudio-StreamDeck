@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StreamdeckLib", "StreamdeckLib\StreamdeckLib.csproj", "{810E86EF-EAAD-4237-B1F6-245984B6D290}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleApp", "ExampleApp\ExampleApp.csproj", "{8A04CD2D-3768-43E6-B460-6E94741D519B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{83FF9BF2-1F10-4C6D-8244-3135808DEE2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "streamdeck-vtubestudio", "streamdeck-vtubestudio\streamdeck-vtubestudio.csproj", "{EC965AB5-3008-4B18-A84A-A52C6AFA1A9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{810E86EF-EAAD-4237-B1F6-245984B6D290}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{810E86EF-EAAD-4237-B1F6-245984B6D290}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{810E86EF-EAAD-4237-B1F6-245984B6D290}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{810E86EF-EAAD-4237-B1F6-245984B6D290}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A04CD2D-3768-43E6-B460-6E94741D519B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A04CD2D-3768-43E6-B460-6E94741D519B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A04CD2D-3768-43E6-B460-6E94741D519B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A04CD2D-3768-43E6-B460-6E94741D519B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83FF9BF2-1F10-4C6D-8244-3135808DEE2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83FF9BF2-1F10-4C6D-8244-3135808DEE2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83FF9BF2-1F10-4C6D-8244-3135808DEE2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83FF9BF2-1F10-4C6D-8244-3135808DEE2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC965AB5-3008-4B18-A84A-A52C6AFA1A9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC965AB5-3008-4B18-A84A-A52C6AFA1A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC965AB5-3008-4B18-A84A-A52C6AFA1A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC965AB5-3008-4B18-A84A-A52C6AFA1A9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
