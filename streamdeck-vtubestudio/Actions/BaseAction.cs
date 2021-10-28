@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Cazzar.StreamDeck.VTubeStudio.Models;
@@ -27,7 +25,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             Vts.ConnectIfNeeded();
             LoadCommands();
         }
-        
+
         private void LoadCommands()
         {
             foreach (var methodInfo in this.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
@@ -35,7 +33,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 var attribute = methodInfo.GetCustomAttribute<PluginCommandAttribute>();
                 if (attribute is null)
                     continue;
-                
+
                 _commands.Add(attribute.Command.ToLower(), methodInfo);
             }
         }
@@ -48,12 +46,12 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
                 ShowAlert();
                 return;
             }
-            
+
             Pressed();
         }
 
         public override void KeyUp(KeyActionPayload keyActionPayload) => Released();
-        
+
         protected async Task UpdateClient()
         {
             await Connection.SendMessage(new SendToPropertyInspector() { Context = this.ContextId, Payload = GetClientData(), });
@@ -77,7 +75,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         protected abstract void Released();
         protected abstract object GetClientData();
         protected abstract void SettingsUpdated(T oldSettings, T newSettings);
-        
+
         public async void Appeared(PropertyInspectorDidAppear didAppear)
         {
             await UpdateClient();
@@ -89,16 +87,16 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         public void OnSendToPlugin(SendToPlugin sendToPlugin)
         {
-            var pl = sendToPlugin.Payload.ToObject<PluginPayload>(); 
+            var pl = sendToPlugin.Payload.ToObject<PluginPayload>();
             if (pl?.Command == null)
             {
                 return;
             }
-            
+
             var command = pl.Command.ToLower();
             if (!_commands.ContainsKey(command))
                 return;
-            
+
             _commands[command].Invoke(this, new object[] { pl });
         }
 
@@ -112,7 +110,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         public virtual async void Tick()
         {
-            _logger.LogInformation("VTS instances: {Count}", VTubeStudioWebsocketClient.Instances.Count);
             Vts.ConnectIfNeeded();
             await UpdateClient();
         }

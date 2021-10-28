@@ -1,24 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Net.Http.Headers;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
-using System.Security.Authentication.ExtendedProtection;
 using System.Threading.Tasks;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
 {
     public class VTubeStudioWebsocketClient
     {
-        internal static readonly List<WeakReference<VTubeStudioWebsocketClient>> Instances = new();
-        
         private readonly IAuthManger _authManager;
         private readonly ILogger<VTubeStudioWebsocketClient> _logger;
         public bool IsAuthed => _authed && _ws.IsAlive;
@@ -40,7 +31,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
             _authManager = authManager;
             _logger = logger;
-            Instances.Add(new(this));
         }
 
         public void Send(ApiRequest request, string requestId = null)
@@ -49,13 +39,13 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             _logger.LogDebug("Sending message: {Data}", data);
             _ws.Send(data);
         }
-        
+
         public void SetConnection(string host, ushort port)
         {
             if ((host, port) == (_host, _port)) return;
-            
+
             _logger.LogInformation("New connection details, set to: ws://{IpAddress}:{Port}", host, port);
-            
+
             _host = host;
             _port = port;
             Connect();
@@ -133,7 +123,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                     var d = response.Data.ToObject<AuthenticationResponse>();
                     _authed = d?.Authenticated ?? false;
                     if (!_authed) _authManager.Token = null;
-                    
+
                     OnAuthenticationResponse?.Invoke(this, new (d) { RequestId = response.RequestId });
                     break;
                 case ResponseType.StatisticsResponse: break;

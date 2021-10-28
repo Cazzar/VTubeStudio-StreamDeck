@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
@@ -63,8 +60,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (newSettings.ShowName != oldSettings.ShowName && !Settings.ShowName)
                 SetTitle(null);
 
-            if (Settings.ShowName)
-                SetTitle(GetTitle());
+            UpdateTitle();
         }
 
         public override void Refresh(PluginPayload pl)
@@ -73,13 +69,27 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             base.Refresh(pl);
         }
 
+        public override void Tick()
+        {
+            base.Tick();
+            UpdateTitle();
+        }
+
+        //Update the title, only if it returns a value and is enabled
+        private void UpdateTitle()
+        {
+            var title = GetTitle();
+            if (!string.IsNullOrEmpty(title) && Settings.ShowName)
+                SetTitle(title);
+        }
+
         private string GetTitle()
         {
             if (string.IsNullOrEmpty(Settings.ModelId)) return "";
-            
+
             var hotkeys = _hotkeyCache.Hotkeys;
             if (!hotkeys.ContainsKey(Settings.ModelId)) return "";
-            
+
             var hotkey = hotkeys[Settings.ModelId]?.FirstOrDefault(s => s.Id == Settings.HotkeyId);
             var title = hotkey?.ButtonTitle ?? "";
 

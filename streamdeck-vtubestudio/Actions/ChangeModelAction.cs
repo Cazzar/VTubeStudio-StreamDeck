@@ -32,7 +32,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         protected override object GetClientData() => new
         {
-            Models = _modelCache.Models.Select(s => new VTubeReference { Id = s.Id, Name = s.Name }).ToList(), 
+            Models = _modelCache.Models.Select(s => new VTubeReference { Id = s.Id, Name = s.Name }).ToList(),
             Connected = Vts.WsIsAlive,
         };
 
@@ -60,14 +60,28 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (oldSettings.ShowName != newSettings.ShowName && !newSettings.ShowName)
                 SetTitle(null);
 
-            if (Settings.ShowName)
-                SetTitle(_modelCache.Models.FirstOrDefault(s => s.Id == Settings.ModelId)?.Name ?? "");
+            UpdateTitle();
+        }
+
+        private string GetTitle()
+        {
+            var model = _modelCache.Models.FirstOrDefault(m => m.Id == Settings.ModelId);
+            return model?.Name;
         }
 
         public override void Tick()
         {
             base.Tick();
-            _logger.LogDebug("Tick Handler called.... {VtsIsAuthed}, {VtsSocketIsAlive}", Vts.IsAuthed, Vts.WsIsAlive);
+
+            UpdateTitle();
+        }
+
+        public void UpdateTitle()
+        {
+            var title = GetTitle();
+
+            if (!string.IsNullOrEmpty(title) && Settings.ShowName)
+                SetTitle(title);
         }
 
         public class PluginSettings
