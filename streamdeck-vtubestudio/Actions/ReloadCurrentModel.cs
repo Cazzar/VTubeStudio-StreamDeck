@@ -14,7 +14,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         public class PluginSettings { }
 
-        public ReloadCurrentModel(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger logger) : base(gsm, vts, isd, logger)
+        public ReloadCurrentModel(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<ReloadCurrentModel> logger) : base(gsm, vts, isd, logger)
         {
             VTubeStudioWebsocketClient.OnCurrentModelInformation += OnCurrentModelInfo;
         }
