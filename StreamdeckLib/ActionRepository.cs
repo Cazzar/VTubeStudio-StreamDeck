@@ -84,7 +84,9 @@ namespace StreamDeckLib
                 return;
             }
 
-            _instances.Remove(disappear.Context, out var _);
+            _instances.Remove(disappear.Context, out var button);
+
+            if (button is IDisposable d) d.Dispose();
         }
 
         internal void GotSettings(DidReceiveSettings settings)

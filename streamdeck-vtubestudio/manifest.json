@@ -59,6 +59,21 @@
       "Tooltip": "VTubeStudio [Scale Model]",
       "UUID": "dev.cazzar.vtubestudio.scalemodel",
       "PropertyInspectorPath": "PropertyInspector/ScaleModel.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Reload Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Reload Model]",
+      "UUID": "dev.cazzar.vtubestudio.reloadmodel",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
     }
   ],
   "Author": "Cazzar",
