@@ -96,7 +96,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             _ws.OnClose += (sender, args) => {
                 _logger.LogInformation("Disconnected from WebSocket: ({Code}) {Reason}", args.Code, args.Reason);
                 SocketClosed?.Invoke(this, args);
-            }
+            };
         }
 
         private void MessageReceived(object sender, MessageEventArgs e)
