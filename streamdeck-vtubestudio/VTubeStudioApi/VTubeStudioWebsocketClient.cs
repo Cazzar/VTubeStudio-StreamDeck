@@ -75,7 +75,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 return;
 
             var uri = new UriBuilder() { Host = _host, Port = _port.Value, Scheme = "ws" }.Uri;
-            _logger.LogDebug("Connecting to {Uri}", uri);
+            _logger.LogInformation("Connecting to {Uri}", uri);
             _ws = new(uri.ToString());
             SetupEvents();
             _ws.Connect();
@@ -92,7 +92,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 SocketConnected?.Invoke(this, null);
             };
             _ws.OnMessage += MessageReceived;
-            _ws.OnClose += (sender, args) => SocketClosed?.Invoke(this, args);
+            _ws.OnError += (sender, e) => _logger.LogInformation("Error from WebSocket: {Error}", e.Message);
+            _ws.OnClose += (sender, args) => {
+                _logger.LogInformation("Disconnected from WebSocket: ({Code}) {Reason}", args.Code, args.Reason);
+                SocketClosed?.Invoke(this, args);
+            }
         }
 
         private void MessageReceived(object sender, MessageEventArgs e)
