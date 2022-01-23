@@ -90,7 +90,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         [PluginCommand("get-params")]
         public virtual void GetModel(PluginPayload pl)
         {
-            _requestId = new Guid().ToString();
+            _requestId = Guid.NewGuid().ToString();
             Vts.Send(new CurrentModelRequest(), _requestId);
         }
 
