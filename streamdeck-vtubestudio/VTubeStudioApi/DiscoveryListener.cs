@@ -26,6 +26,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public DiscoveryListener()
         {
             _udpClient = new(47779);
+            _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             _endPoint = new(IPAddress.Any, 47779);
 
 
