@@ -86,7 +86,7 @@
   "CodePathWin": "streamdeck-vtubestudio.exe",
   "CodePathMac": "streamdeck-vtubestudio",
   "Category": "VTubeStudio [Cazzar]",
-  "CategoryIcon": "",
+  "CategoryIcon": "vts_logo_transparent",
   "OS": [
     {
       "Platform": "windows",
