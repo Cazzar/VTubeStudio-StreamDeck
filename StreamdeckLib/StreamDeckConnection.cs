@@ -74,86 +74,92 @@ namespace StreamDeckLib
 
         private async Task<WebSocketCloseStatus> ReceiveAsync()
         {
-            var buffer = new byte[BufferSize];
-            var arrayBuffer = new ArraySegment<byte>(buffer);
-            var textBuffer = new StringBuilder(BufferSize);
-
-            while (!_cancelSource.IsCancellationRequested)
+            try 
             {
-                var result = await _socket.ReceiveAsync(arrayBuffer, _cancelSource.Token);
+                var buffer = new byte[BufferSize];
+                var arrayBuffer = new ArraySegment<byte>(buffer);
+                var textBuffer = new StringBuilder(BufferSize);
 
-                if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus is { } && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
+                while (!_cancelSource.IsCancellationRequested)
                 {
-                    _logger.LogInformation("Received disconnect event, of type {CloseStatus} reason given? {CloseStatusDescription}", result.CloseStatus, result.CloseStatusDescription);
+                    var result = await _socket.ReceiveAsync(arrayBuffer, _cancelSource.Token);
 
-                    return result.CloseStatus.GetValueOrDefault();
-                }
+                    if (result.MessageType == WebSocketMessageType.Close || (result.CloseStatus is { } && result.CloseStatus.Value != WebSocketCloseStatus.Empty))
+                    {
+                        _logger.LogInformation("Received disconnect event, of type {CloseStatus} reason given? {CloseStatusDescription}", result.CloseStatus, result.CloseStatusDescription);
 
-                if (result.MessageType != WebSocketMessageType.Text) continue;
+                        return result.CloseStatus.GetValueOrDefault();
+                    }
 
-                textBuffer.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
-                if (!result.EndOfMessage) continue;
+                    if (result.MessageType != WebSocketMessageType.Text) continue;
+
+                    textBuffer.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
+                    if (!result.EndOfMessage) continue;
                 
-                var message = JsonConvert.DeserializeObject<EventMessage>(textBuffer.ToString(), new StreamDeckMessageConverter());
-                _logger.LogDebug("Got message of {Event} JSON data: {ToString}", message?.Event, textBuffer.ToString());
+                    var message = JsonConvert.DeserializeObject<EventMessage>(textBuffer.ToString(), new StreamDeckMessageConverter());
+                    _logger.LogDebug("Got message of {Event} JSON data: {ToString}", message?.Event, textBuffer.ToString());
 
-                switch (message)
-                {
-                    case DidReceiveSettings m:
-                        _actionRepository.GotSettings(m);
-                        break;
-                    case GlobalSettings m:
-                        foreach (var globalSettingsHandler in _globalSettingsHandlers)
-                            globalSettingsHandler.GotGlobalSettings(m.Payload.Settings);
-                        break;
-                    case KeyDown m:
-                        _actionRepository.ButtonDown(m);
-                        break;
-                    case KeyUp m:
-                        _actionRepository.ButtonUp(m);
-                        break;
-                    case OnWillAppear m:
-                        _actionRepository.Appeared(m);
-                        break;
-                    case OnWillDisappear m:
-                        _actionRepository.Disappeared(m);
-                        break;
-                    case TitleParametersDidChange m:
-                        _actionRepository.TitleParamsChange(m);
-                        break;
-                    case DeviceDidConnect m:
-                        OnDeviceConnected?.Invoke(this, new () { Event = m.Event, Payload = m, });
-                        break;
-                    case DeviceDidDisconnect m:
-                        OnDeviceDisconnected?.Invoke(this, new () { Event = m.Event, Payload = m, });
-                        break;
-                    case ApplicationDidLaunch m:
-                        foreach (var applicationHandler in _applicationHandlers)
-                            applicationHandler.Launched(m);
-                        break;
-                    case ApplicationDidTerminate m:
-                        foreach (var applicationHandler in _applicationHandlers)
-                            applicationHandler.Terminated(m);
-                        break;
-                    case SystemDidWakeUp m:
-                        OnSystemWakeup?.Invoke(this, new () { Event = m.Event, Payload = m, });
-                        break;
-                    case PropertyInspectorDidAppear m:
-                        _actionRepository.PropertyInspectorAppeared(m);
-                        break;
-                    case PropertyInspectorDidDisappear m:
-                        _actionRepository.PropertyInspectorDisappeared(m);
-                        break;
-                    case SendToPlugin m:
-                        _actionRepository.SendToPlugin(m);
-                        break;
-                    
+                    switch (message)
+                    {
+                        case DidReceiveSettings m:
+                            _actionRepository.GotSettings(m);
+                            break;
+                        case GlobalSettings m:
+                            foreach (var globalSettingsHandler in _globalSettingsHandlers)
+                                globalSettingsHandler.GotGlobalSettings(m.Payload.Settings);
+                            break;
+                        case KeyDown m:
+                            _actionRepository.ButtonDown(m);
+                            break;
+                        case KeyUp m:
+                            _actionRepository.ButtonUp(m);
+                            break;
+                        case OnWillAppear m:
+                            _actionRepository.Appeared(m);
+                            break;
+                        case OnWillDisappear m:
+                            _actionRepository.Disappeared(m);
+                            break;
+                        case TitleParametersDidChange m:
+                            _actionRepository.TitleParamsChange(m);
+                            break;
+                        case DeviceDidConnect m:
+                            OnDeviceConnected?.Invoke(this, new () { Event = m.Event, Payload = m, });
+                            break;
+                        case DeviceDidDisconnect m:
+                            OnDeviceDisconnected?.Invoke(this, new () { Event = m.Event, Payload = m, });
+                            break;
+                        case ApplicationDidLaunch m:
+                            foreach (var applicationHandler in _applicationHandlers)
+                                applicationHandler.Launched(m);
+                            break;
+                        case ApplicationDidTerminate m:
+                            foreach (var applicationHandler in _applicationHandlers)
+                                applicationHandler.Terminated(m);
+                            break;
+                        case SystemDidWakeUp m:
+                            OnSystemWakeup?.Invoke(this, new () { Event = m.Event, Payload = m, });
+                            break;
+                        case PropertyInspectorDidAppear m:
+                            _actionRepository.PropertyInspectorAppeared(m);
+                            break;
+                        case PropertyInspectorDidDisappear m:
+                            _actionRepository.PropertyInspectorDisappeared(m);
+                            break;
+                        case SendToPlugin m:
+                            _actionRepository.SendToPlugin(m);
+                            break;        
+                    }
+
+                    textBuffer.Clear();
                 }
 
-                textBuffer.Clear();
-            }
-
-            return WebSocketCloseStatus.NormalClosure;
+                return WebSocketCloseStatus.NormalClosure;
+            } 
+            catch (WebSocketException) 
+            {
+                return WebSocketCloseStatus.ProtocolError;
+            } 
         }
 
         public async Task Cancel()
