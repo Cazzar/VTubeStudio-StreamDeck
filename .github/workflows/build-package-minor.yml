@@ -3,6 +3,7 @@ on:
 
 env:
   plugin: dev.cazzar.streamdeck.vtubestudio
+  NODE_OPTIONS: "--openssl-legacy-provider"
 
 jobs:
   version:
