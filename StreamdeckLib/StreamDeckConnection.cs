@@ -170,7 +170,7 @@ namespace StreamDeckLib
 
         public async Task SendMessage(EventMessage message)
         {
-            if (_socket.State != WebSocketState.Open) throw new WebsocketNotConnectedException();
+            if (_socket.State != WebSocketState.Open) return;
 
             try
             {
