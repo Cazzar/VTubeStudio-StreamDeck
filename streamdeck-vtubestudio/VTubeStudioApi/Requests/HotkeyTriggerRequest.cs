@@ -21,4 +21,17 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests
 
         public override RequestType MessageType { get; } = RequestType.HotkeyTriggerRequest;
     }
+    
+    public class EventSubscriptionRequest<T>(string eventName, T config = default, bool subscribe = true) : ApiRequest
+    {
+        [JsonProperty("eventName")]
+        public string Event { get; set; } = eventName;
+        
+        [JsonProperty("subscribe")]
+        public bool Subscribe { get; set; } = subscribe;
+        
+        [JsonProperty("config")]
+        public T Config { get; set; } = config;
+        public override RequestType MessageType { get; } = RequestType.EventSubscriptionRequest;
+    }
 }

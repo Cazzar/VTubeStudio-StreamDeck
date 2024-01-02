@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using StreamDeckLib.Models;
+using StreamDeckLib.Models.StreamDeckPlus;
 
 namespace StreamDeckLib.Json
 {
     public class StreamDeckMessageConverter : TypeMapConverter<EventMessage>
     {
-        public StreamDeckMessageConverter() : base(new Dictionary<string, Type>()
+        public StreamDeckMessageConverter() : base(new()
         {
             {"didReceiveSettings", typeof(DidReceiveSettings)},
             {"didReceiveGlobalSettings", typeof(GlobalSettings)},
@@ -23,6 +24,10 @@ namespace StreamDeckLib.Json
             {"propertyInspectorDidAppear", typeof(PropertyInspectorDidAppear)},
             {"propertyInspectorDidDisappear", typeof(PropertyInspectorDidDisappear)},
             {"sendToPlugin", typeof(SendToPlugin)},
+            {"touchTap", typeof(TouchTap)},
+            {"dialDown", typeof(DialDown)},
+            {"dialUp", typeof(DialUp)},
+            {"dialRotate", typeof(DialRotate)},
         }, "event")
         {}
     }

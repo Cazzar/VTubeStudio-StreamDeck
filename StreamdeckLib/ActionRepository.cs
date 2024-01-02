@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StreamDeckLib.Models;
+using StreamDeckLib.Models.StreamDeckPlus;
 
 namespace StreamDeckLib
 {
@@ -185,6 +186,61 @@ namespace StreamDeckLib
                 return;
 
             titleParams.GotTitleParams(titleParameters);
+        }
+        
+        public void TouchTap(TouchTap touchTap)
+        {
+            if (!_instances.TryGetValue(touchTap.Context, out var instance))
+            {
+                _logger.LogCritical("SendToPlugin: Instance ID {Instance} was not found in the context, this is a major internal error", touchTap.Context);
+                return;
+            }
+
+            if (instance is not IStreamDeckPlus touchHandler)
+                return;
+
+            touchHandler.Touch(touchTap.Payload);
+        }
+        
+        public void DialDown(DialDown dialDown)
+        {
+            if (!_instances.TryGetValue(dialDown.Context, out var instance))
+            {
+                _logger.LogCritical("SendToPlugin: Instance ID {Instance} was not found in the context, this is a major internal error", dialDown.Context);
+                return;
+            }
+
+            if (instance is not IStreamDeckPlus dialHandler)
+                return;
+
+            dialHandler.DialDown(dialDown.Payload);
+        }
+        
+        public void DialUp(DialUp dialUp)
+        {
+            if (!_instances.TryGetValue(dialUp.Context, out var instance))
+            {
+                _logger.LogCritical("SendToPlugin: Instance ID {Instance} was not found in the context, this is a major internal error", dialUp.Context);
+                return;
+            }
+
+            if (instance is not IStreamDeckPlus dialHandler)
+                return;
+
+            dialHandler.DialUp(dialUp.Payload);
+        }
+        
+        public void DialRotate(DialRotate dialRotate) 
+        {
+            if (!_instances.TryGetValue(dialRotate.Context, out var instance)) {
+                _logger.LogCritical("SendToPlugin: Instance ID {Instance} was not found in the context, this is a major internal error", dialRotate.Context);
+                return;
+            }
+
+            if (instance is not IStreamDeckPlus dialHandler)
+                return;
+
+            dialHandler.DialRotate(dialRotate.Payload);
         }
 
         public void Tick()

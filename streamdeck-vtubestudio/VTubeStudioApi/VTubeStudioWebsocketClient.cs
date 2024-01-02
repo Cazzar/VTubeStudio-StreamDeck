@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
 using Microsoft.Extensions.Logging;
@@ -97,6 +98,13 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 _logger.LogInformation("Disconnected from WebSocket: ({Code}) {Reason}", args.Code, args.Reason);
                 SocketClosed?.Invoke(this, args);
             };
+            OnAuthenticationResponse += async (sender, args) =>
+            {
+                if (!args.Response.Authenticated)
+                    return;
+                
+                Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
+            };
         }
 
         private void MessageReceived(object sender, MessageEventArgs e)
@@ -142,7 +150,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                     OnModelLoad?.Invoke(this, new(response.Data.ToObject<ModelLoadResponse>()){ RequestId = response.RequestId });
                     break;
                 case ResponseType.MoveModelResponse:
-                    OnModelMove?.Invoke(this, new(response.Data.ToObject<EmptyResponse>()){ RequestId = response.RequestId });
+                    // OnModelMove?.Invoke(this, new(response.Data.ToObject<EmptyResponse>()){ RequestId = response.RequestId }); //empty response, this can be sequested
                     break;
                 case ResponseType.HotkeysInCurrentModelResponse:
                     OnModelHotkeys?.Invoke(this, new (response.Data.ToObject<ModelHotkeysResponse>()){ RequestId = response.RequestId });
@@ -159,6 +167,10 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
                 case ResponseType.ParameterCreationResponse: break;
                 case ResponseType.ParameterDeletionResponse: break;
                 case ResponseType.InjectParameterDataResponse: break;
+                case ResponseType.EventSubscriptionResponse: break;
+                case ResponseType.ModelMovedEvent:
+                    OnModelMove.Invoke(this, new (response.Data.ToObject<ModelMoveEvent>()));
+                    break;
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -196,7 +208,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         public static event EventHandler<ApiEventArgs<ModelHotkeysResponse>> OnModelHotkeys;
         public static event EventHandler<ApiEventArgs<HotkeyTriggerResponse>> OnHotkeyTriggered;
         public static event EventHandler<ApiEventArgs<CurrentModelResponse>> OnCurrentModelInformation;
-        public static event EventHandler<ApiEventArgs<EmptyResponse>> OnModelMove;
+        public static event EventHandler<ApiEventArgs<ModelMoveEvent>> OnModelMove;
 #endregion
     }
 }

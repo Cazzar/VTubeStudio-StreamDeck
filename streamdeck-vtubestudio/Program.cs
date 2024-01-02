@@ -19,7 +19,9 @@ namespace Cazzar.StreamDeck.VTubeStudio
             // while (!System.Diagnostics.Debugger.IsAttached) { System.Threading.Thread.Sleep(100); }
 
             #if DEBUG
-            args = await File.ReadAllLinesAsync(@"C:\Users\me\AppData\Roaming\Elgato\StreamDeck\Plugins\dev.cazzar.streamdeck.vtubestudio.sdPlugin\argv.txt");
+            //get roaming app data folder
+            var path = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
+            args = await File.ReadAllLinesAsync(Path.Combine(path, @"Elgato\StreamDeck\Plugins\dev.cazzar.streamdeck.vtubestudio.sdPlugin\argv.txt"));
             #endif
 
             var hostBuilder = CreateHostBuilder(args);

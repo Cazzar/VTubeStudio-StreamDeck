@@ -12,6 +12,7 @@ using Newtonsoft.Json.Serialization;
 using StreamDeckLib.Extensions.Models;
 using StreamDeckLib.Json;
 using StreamDeckLib.Models;
+using StreamDeckLib.Models.StreamDeckPlus;
 
 namespace StreamDeckLib
 {
@@ -95,6 +96,7 @@ namespace StreamDeckLib
 
                     textBuffer.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
                     if (!result.EndOfMessage) continue;
+                    _logger.LogDebug("Got JSON data: {ToString}", textBuffer.ToString());
                 
                     var message = JsonConvert.DeserializeObject<EventMessage>(textBuffer.ToString(), new StreamDeckMessageConverter());
                     _logger.LogDebug("Got message of {Event} JSON data: {ToString}", message?.Event, textBuffer.ToString());
@@ -148,7 +150,19 @@ namespace StreamDeckLib
                             break;
                         case SendToPlugin m:
                             _actionRepository.SendToPlugin(m);
-                            break;        
+                            break;
+                        case TouchTap m:
+                            _actionRepository.TouchTap(m);
+                            break;
+                        case DialDown m:
+                            _actionRepository.DialDown(m);
+                            break;
+                        case DialUp m:
+                            _actionRepository.DialUp(m);
+                            break;
+                        case DialRotate m:
+                            _actionRepository.DialRotate(m);
+                            break;
                     }
 
                     textBuffer.Clear();

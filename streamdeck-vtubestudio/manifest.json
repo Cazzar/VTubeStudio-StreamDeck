@@ -74,6 +74,32 @@
       "Tooltip": "VTubeStudio [Reload Model]",
       "UUID": "dev.cazzar.vtubestudio.reloadmodel",
       "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Zoom Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "title": "Test?",
+        "layout": "$X1",
+        "TriggerDescription": {
+          "Rotate": "Describe the rotation",
+          "Push": "Describe the encoder push",
+          "Touch": "Describe the touch",
+          "LongTouch": "Describe the long touch"
+        }
+      },
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Zoom Model]",
+      "UUID": "dev.cazzar.vtubestudio.zoommodel",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
     }
   ],
   "Author": "Cazzar",

@@ -22,6 +22,7 @@
         ParameterCreationRequest,
         ParameterDeletionRequest,
         InjectParameterDataRequest,
+        EventSubscriptionRequest,
     }
 
     public enum ResponseType
@@ -47,6 +48,8 @@
         ParameterCreationResponse,
         ParameterDeletionResponse,
         InjectParameterDataResponse,
+        EventSubscriptionResponse,
+        ModelMovedEvent,
     }
 
     /// <summary>

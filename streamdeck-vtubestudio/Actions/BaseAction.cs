@@ -15,7 +15,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         protected VTubeStudioWebsocketClient Vts;
         private readonly Dictionary<string, MethodInfo> _commands = new ();
         protected readonly GlobalSettingsManager Gsm;
-        private readonly ILogger _logger;
+        protected readonly ILogger _logger;
 
         public BaseAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger logger) : base(isd)
         {

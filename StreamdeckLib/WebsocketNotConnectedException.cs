@@ -2,7 +2,5 @@
 
 namespace StreamDeckLib
 {
-    public class WebsocketNotConnectedException : Exception
-    {
-    }
+    public class WebsocketNotConnectedException : Exception;
 }
