@@ -34,7 +34,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         protected override void Released() { }
 
-        protected override object GetClientData() => null;
         protected override void SettingsUpdated(PluginSettings oldSettings, PluginSettings newSettings) { }
 
         public void Dispose()

@@ -80,11 +80,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
         }
 
-        protected override object GetClientData() => new
-        {
-            Connected = Vts.IsAuthed,
-        };
-
         protected override void SettingsUpdated(PluginSettings oldSettings, PluginSettings newSettings) { }
 
         [PluginCommand("get-params")]

@@ -43,8 +43,6 @@ public class RotateModelAction : BaseAction<RotateModelAction.Settings>, IStream
     protected override void Released()
     {
     }
-
-    protected override object GetClientData() => null;
     
     protected override void SettingsUpdated(Settings oldSettings, Settings newSettings)
     {

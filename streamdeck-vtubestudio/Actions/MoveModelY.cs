@@ -44,8 +44,6 @@ public class MoveModelY : BaseAction<MoveModelY.Settings>, IStreamDeckPlus, IDis
     protected override void Released()
     {
     }
-
-    protected override object GetClientData() => null;
     
     protected override void SettingsUpdated(Settings oldSettings, Settings newSettings)
     {

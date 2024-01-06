@@ -18,12 +18,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         protected override void Pressed() => Vts.Send(new MoveModelRequest() { Size = Settings.Size, });
 
         protected override void Released() { }
-
-        protected override object GetClientData() => new
-        {
-            Connected = Vts.IsAuthed,
-        };
-
+        
         protected override void SettingsUpdated(PluginSettings oldSettings, PluginSettings newSettings)
         {
         }

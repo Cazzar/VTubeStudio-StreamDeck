@@ -73,7 +73,11 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         protected abstract void Pressed();
         protected abstract void Released();
-        protected abstract object GetClientData();
+        protected virtual object GetClientData() => new
+        {
+            Connected = Vts.IsAuthed,
+        };
+        
         protected abstract void SettingsUpdated(T oldSettings, T newSettings);
 
         public async void Appeared(PropertyInspectorDidAppear didAppear)

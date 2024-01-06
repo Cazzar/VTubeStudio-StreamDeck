@@ -90,15 +90,105 @@
         "title": "Test?",
         "layout": "$X1",
         "TriggerDescription": {
-          "Rotate": "Describe the rotation",
-          "Push": "Describe the encoder push",
-          "Touch": "Describe the touch",
-          "LongTouch": "Describe the long touch"
+          "Rotate": "Zoom Model",
+          "Touch": "Reset to default zoom"
         }
       },
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Zoom Model]",
       "UUID": "dev.cazzar.vtubestudio.zoommodel",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Zoom Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Zoom Model",
+          "Touch": "Reset to default zoom"
+        }
+      },
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Zoom Model]",
+      "UUID": "dev.cazzar.vtubestudio.zoommodel",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Rotate Model",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "$A1",
+        "TriggerDescription": {
+            "Rotate": "Rotate Model",
+            "Touch": "Reset to 0°"
+        }
+      },
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Rotate Model]",
+      "UUID": "dev.cazzar.vtubestudio.rotatemodel",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Move X Axis",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Move Model Left/Right",
+          "Touch": "Reset to centre"
+        }
+      },
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Move X Axis]",
+      "UUID": "dev.cazzar.vtubestudio.movemodel.x",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Move Y Axis",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "Controllers": ["Encoder"],
+      "Encoder": {
+        "layout": "$B1",
+        "TriggerDescription": {
+          "Rotate": "Move Model Up/Down",
+          "Touch": "Reset to centre"
+        }
+      },
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Move Y Axis]",
+      "UUID": "dev.cazzar.vtubestudio.movemodel.Y",
       "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
     }
   ],

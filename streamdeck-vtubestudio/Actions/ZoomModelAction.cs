@@ -56,10 +56,11 @@ public class ZoomModelAction
     protected override void Released()
     {
     }
-    protected override object GetClientData() => null;
+    
     protected override void SettingsUpdated(PluginSettings oldSettings, PluginSettings newSettings)
     {
     }
+    
     public void Touch(TouchTapPayload touchTap) => Pressed();
 
     public void DialDown(DialPressPayload dialDown) { }
@@ -75,13 +76,6 @@ public class ZoomModelAction
         Vts.Send(new MoveModelRequest() {Size = _currentSize, TimeInSeconds = 0.05d});
 
         UpdateFeedback((_currentSize + 100d) / 200d);
-    }
-
-    public override void Tick()
-    {
-        base.Tick();
-        //
-        // Vts.Send(new CurrentModelRequest());
     }
 
     public void Dispose()
