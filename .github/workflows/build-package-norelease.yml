@@ -96,7 +96,7 @@ jobs:
 
       - name: download dist tool
         run: |
-          Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutFile DistributionTool.zip
+          Invoke-WebRequest "https://3994876944-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F2DhYcfmA3oIOndHWUw9v%2Fuploads%2Fgit-blob-4bc7588a20b9d7ed9438efe0ce7766fad47391bf%2FDistributionToolWindows.zip?alt=media" -OutFile DistributionTool.zip
           Expand-Archive DistributionTool.zip -DestinationPath .
 
       - name: make sdPlugin package
