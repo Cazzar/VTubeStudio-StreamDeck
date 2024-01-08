@@ -1,0 +1,108 @@
+on:
+  push:
+    branches:
+      - main
+
+env:
+  plugin: dev.cazzar.streamdeck.vtubestudio
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
+
+      - name: Get previous release version
+        id: previoustag
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
+        with:
+          fallback: 1.0.0
+
+      - name: 'Get next minor version'
+        id: semvers
+        uses: "WyriHaximus/github-action-next-semvers@v1"
+        with:
+          version: ${{ steps.previoustag.outputs.tag }}
+    outputs:
+      ver: ${{ steps.semvers.outputs.patch }}
+
+
+  binary:
+    needs: version
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build for windows
+        run: dotnet publish -c Release --runtime win-x64 -o build streamdeck-vtubestudio
+
+      - name: build for osx
+        run: dotnet publish -c Release --runtime osx-x64 -o build streamdeck-vtubestudio
+
+      - uses: jossef/action-set-json-field@v1
+        with:
+          file: build/manifest.json
+          field: Version
+          value: ${{ needs.version.outputs.ver }}.${{ github.run_id }} 
+
+      - name: print manifest
+        run: Get-Content build/manifest.json
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: binary-out
+          path: build/
+
+  property-inspector:
+    runs-on: windows-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: build property inspector
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
+        working-directory: ./streamdeck-vtubestudio/PropertyInspector
+        env: 
+          NODE_OPTIONS: "--openssl-legacy-provider"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: property-inspector
+          path: ./streamdeck-vtubestudio/PropertyInspector/dist/
+
+  bundle:
+    runs-on: windows-latest
+    needs:
+      - binary
+      - property-inspector
+    steps:
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: binary-out
+          path: ${{ env.plugin }}.sdPlugin
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: property-inspector
+          path: ${{ env.plugin }}.sdPlugin/PropertyInspector
+
+      - name: download dist tool
+        run: |
+          Invoke-WebRequest "https://developer.elgato.com/documentation/stream-deck/distributiontool/DistributionToolWindows.zip" -OutFile DistributionTool.zip
+          Expand-Archive DistributionTool.zip -DestinationPath .
+
+      - name: make sdPlugin package
+        run: ./DistributionTool.exe -b -i ${{ env.plugin }}.sdPlugin -o .
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: streamDeckPlugin
+          path: ${{ env.plugin }}.streamDeckPlugin
