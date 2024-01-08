@@ -87,30 +87,6 @@
       ],
       "Controllers": ["Encoder"],
       "Encoder": {
-        "title": "Test?",
-        "layout": "$X1",
-        "TriggerDescription": {
-          "Rotate": "Zoom Model",
-          "Touch": "Reset to default zoom"
-        }
-      },
-      "SupportedInMultiActions": true,
-      "Tooltip": "VTubeStudio [Zoom Model]",
-      "UUID": "dev.cazzar.vtubestudio.zoommodel",
-      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
-    },
-    {
-      "Icon": "vts_logo_transparent",
-      "Name": "Zoom Model",
-      "States": [
-        {
-          "Image": "vts_logo_transparent",
-          "TitleAlignment": "bottom",
-          "FontSize": "10"
-        }
-      ],
-      "Controllers": ["Encoder"],
-      "Encoder": {
         "layout": "$B1",
         "TriggerDescription": {
           "Rotate": "Zoom Model",
