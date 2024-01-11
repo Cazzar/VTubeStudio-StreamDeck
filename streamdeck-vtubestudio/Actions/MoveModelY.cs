@@ -1,4 +1,5 @@
 ﻿using System;
+using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
@@ -10,12 +11,10 @@ using StreamDeckLib.Models.StreamDeckPlus;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.movemodel.y")]
-public class MoveModelY : BaseAction<MoveModelY.Settings>, IStreamDeckPlus, IDisposable
+public class MoveModelY : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, IDisposable
 {
     private double _currentPosition = 0;
     
-    public class Settings;
-
     public MoveModelY(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<MoveModelY> logger) : base(gsm, vts, isd, logger)
     {
         VTubeStudioWebsocketClient.OnModelMove += ModelMove;
@@ -37,7 +36,7 @@ public class MoveModelY : BaseAction<MoveModelY.Settings>, IStreamDeckPlus, IDis
     {
         Vts.Send(new MoveModelRequest
         {
-            PositionY = 0,
+            PositionY = Settings.DefaultPosition,
             TimeInSeconds = 0.05d,
         });
     }
@@ -45,7 +44,7 @@ public class MoveModelY : BaseAction<MoveModelY.Settings>, IStreamDeckPlus, IDis
     {
     }
     
-    protected override void SettingsUpdated(Settings oldSettings, Settings newSettings)
+    protected override void SettingsUpdated(MoveModelX.MoveSettings oldSettings, MoveModelX.MoveSettings newSettings)
     {
     }
     public void Touch(TouchTapPayload touchTap) => Pressed();
@@ -58,13 +57,21 @@ public class MoveModelY : BaseAction<MoveModelY.Settings>, IStreamDeckPlus, IDis
     {
         Vts.Send(new MoveModelRequest
         {
-            PositionY = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks / 30d), -2, 2),
+            PositionY = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks * Settings.StepSize), -2, 2),
             TimeInSeconds = 0.05d,
         });
     }
     
+    [PluginCommand("use-current")]
+    public void UseCurrent(PluginPayload pl)
+    {
+        Settings.DefaultPosition = _currentPosition;
+        SaveSettings();
+    }
+    
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         VTubeStudioWebsocketClient.OnModelMove -= ModelMove;
     }
 }

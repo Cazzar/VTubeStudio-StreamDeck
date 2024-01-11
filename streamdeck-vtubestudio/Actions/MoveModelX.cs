@@ -1,8 +1,10 @@
 ﻿using System;
+using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using StreamDeckLib;
 using StreamDeckLib.Models;
 using StreamDeckLib.Models.StreamDeckPlus;
@@ -10,11 +12,17 @@ using StreamDeckLib.Models.StreamDeckPlus;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.movemodel.x")]
-public class MoveModelX : BaseAction<MoveModelX.Settings>, IStreamDeckPlus, IDisposable
+public class MoveModelX : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, IDisposable
 {
     private double _currentPosition = 0;
-    
-    public class Settings;
+
+    public class MoveSettings
+    {
+        [JsonProperty("stepSize")]
+        public int StepSize { get; set; } = 2;
+        [JsonProperty("defaultPosition")]
+        public double DefaultPosition { get; set; } = 0.0d;
+    };
 
     public MoveModelX(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<MoveModelX> logger) : base(gsm, vts, isd, logger)
     {
@@ -37,7 +45,7 @@ public class MoveModelX : BaseAction<MoveModelX.Settings>, IStreamDeckPlus, IDis
     {
         Vts.Send(new MoveModelRequest
         {
-            PositionX = 0,
+            PositionX = Settings.DefaultPosition,
             TimeInSeconds = 0.05d,
         });
     }
@@ -45,9 +53,10 @@ public class MoveModelX : BaseAction<MoveModelX.Settings>, IStreamDeckPlus, IDis
     {
     }
     
-    protected override void SettingsUpdated(Settings oldSettings, Settings newSettings)
+    protected override void SettingsUpdated(MoveSettings oldSettings, MoveSettings newSettings)
     {
     }
+    
     public void Touch(TouchTapPayload touchTap) => Pressed();
     
     public void DialDown(DialPressPayload dialDown) => Pressed();
@@ -58,13 +67,21 @@ public class MoveModelX : BaseAction<MoveModelX.Settings>, IStreamDeckPlus, IDis
     {
         Vts.Send(new MoveModelRequest
         {
-            PositionX = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks / 30d), -2, 2),
-            TimeInSeconds = 0.05d,
+            PositionX = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks * Settings.StepSize), -2, 2),
+            TimeInSeconds = 0.01d,
         });
+    }
+
+    [PluginCommand("use-current")]
+    public void UseCurrent(PluginPayload pl)
+    {
+        Settings.DefaultPosition = _currentPosition;
+        SaveSettings();
     }
     
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         VTubeStudioWebsocketClient.OnModelMove -= ModelMove;
     }
 }
