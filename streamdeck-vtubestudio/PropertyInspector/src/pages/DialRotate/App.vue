@@ -9,7 +9,7 @@
   </div>
   
   <div class="sdpi-item">
-    <div class="sdpi-item-label">Step Size ({{ stepSize ?? '0' }})</div>
+    <div class="sdpi-item-label">Step Size ({{ stepValue }})</div>
     <span class="sdpi-item-value">
       <input type="range" min="1" max="100" step="1" v-model="stepSize">
     </span>
@@ -42,7 +42,12 @@ export default {
     currentRotation() {
       let pos = Number(this.defaultRotation) ?? 0
       
-      return pos.toLocaleString(undefined, { maximumFractionDigits: 2 }) + "°";
+      return pos.toLocaleString(undefined, { maximumFractionDigits: 2 }) + "°"
+    },
+    stepValue() {
+      let val = Number(this.stepSize) ?? 1
+      
+      return (val / 10.0).toLocaleString(undefined, { maximumFractionDigits: 1 }) + "°"
     }
   },
   watch: {
@@ -61,7 +66,7 @@ export default {
     },
     saveSettings() {
       this.$store.state.streamDeck.saveSettings({
-        defaultRotation: this.defaultPosition,
+        defaultRotation: this.defaultRotation,
         stepSize: this.stepSize
       });
     }

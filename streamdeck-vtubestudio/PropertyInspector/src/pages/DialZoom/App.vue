@@ -61,7 +61,7 @@ export default {
     },
     saveSettings() {
       this.$store.state.streamDeck.saveSettings({
-        defaultZoom: this.defaultPosition,
+        defaultZoom: this.defaultZoom,
         stepSize: this.stepSize
       });
     }
