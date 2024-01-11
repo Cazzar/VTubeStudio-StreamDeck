@@ -11,7 +11,7 @@
   <div class="sdpi-item">
     <div class="sdpi-item-label">Step Size ({{ stepSize ?? '0' }})</div>
     <span class="sdpi-item-value">
-      <input type="range" min="1" max="10" step="1" v-model="stepSize">
+      <input type="range" min="1" max="100" step="1" v-model="stepSize">
     </span>
   </div>
   

@@ -70,7 +70,7 @@ public class MoveModelX : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, 
         Vts.Send(new MoveModelRequest
         {
             PositionX = _currentPosition,
-            TimeInSeconds = 0.01d,
+            TimeInSeconds = 0.05d,
         });
     }
 

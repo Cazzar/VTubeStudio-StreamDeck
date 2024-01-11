@@ -96,7 +96,7 @@
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Zoom Model]",
       "UUID": "dev.cazzar.vtubestudio.zoommodel",
-      "PropertyInspectorPath": "PropertyInspector/DialMove.html"
+      "PropertyInspectorPath": "PropertyInspector/DialZOom.html"
     },
     {
       "Icon": "vts_logo_transparent",

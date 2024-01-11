@@ -59,7 +59,7 @@ public class ZoomModelAction
     
     protected override void Pressed()
     {
-        Vts.Send(new MoveModelRequest() {Size = Settings.DefaultZoom});
+        Vts.Send(new MoveModelRequest() { Size = Settings.DefaultZoom });
     }
     protected override void Released()
     {
