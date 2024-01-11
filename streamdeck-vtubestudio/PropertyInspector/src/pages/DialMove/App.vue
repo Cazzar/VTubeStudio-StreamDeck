@@ -17,7 +17,7 @@
   
   <div class="sdpi-item">
     <div class="sdpi-item-label">Tools</div>
-    <button class="sdpi-item-value" id="use-current" @click="sendAction('use-current', null)">Current Pos</button>
+    <button class="sdpi-item-value" id="use-current" @click="sendAction('use-current', null)">Current</button>
     <button class="sdpi-item-value" id="force-refresh" @click="sendAction('refresh', null)">Refresh</button>
   </div>
 </div>
