@@ -23,7 +23,7 @@ public class MoveModelY : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, 
     private async void ModelMove(object sender, ApiEventArgs<ModelMoveEvent> e)
     {
         _currentPosition = e.Response.Position.Y;
-        var percentage = (_currentPosition + 1d) / 2d;
+        var percentage = Math.Clamp((_currentPosition + 1d) / 2d, 0, 1);
         
         await Connection.SendMessage(new SetFeedback() { Context = this.ContextId, Payload = new()
         {

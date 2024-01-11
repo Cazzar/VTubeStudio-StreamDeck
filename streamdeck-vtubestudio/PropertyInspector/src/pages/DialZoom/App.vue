@@ -9,7 +9,7 @@
   </div>
   
   <div class="sdpi-item">
-    <div class="sdpi-item-label">Step Size ({{ stepSize ?? '0' }})</div>
+    <div class="sdpi-item-label">Step Size ({{ zoomStep }})</div>
     <span class="sdpi-item-value">
       <input type="range" min="1" max="10" step="1" v-model="stepSize">
     </span>
@@ -42,7 +42,10 @@ export default {
     currentZoom() {
       let pos = Number(this.defaultZoom) ?? 0
       
-      return ((pos + 100) / 200.0).toLocaleString(undefined, { style: "percent" });
+      return ((pos + 100) / 200.0).toLocaleString(undefined, { style: "percent", maximumFractionDigits: 1 });
+    },
+    zoomStep() {
+      return ((Number(this.stepSize) ?? 1) / 200).toLocaleString(undefined, { style: "percent", maximumFractionDigits: 1 })
     }
   },
   watch: {

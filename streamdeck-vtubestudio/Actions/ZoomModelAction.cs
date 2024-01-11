@@ -44,7 +44,7 @@ public class ZoomModelAction
     {
         await Connection.SendMessage(new SetFeedback() { Context = this.ContextId, Payload = new()
         {
-            {"value", $"{percentage:P0}"},
+            {"value", $"{percentage:P1}"},
             {"indicator", (int) (percentage * 100) },
         } });
     }
