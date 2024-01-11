@@ -96,7 +96,7 @@
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Zoom Model]",
       "UUID": "dev.cazzar.vtubestudio.zoommodel",
-      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+      "PropertyInspectorPath": "PropertyInspector/DialMove.html"
     },
     {
       "Icon": "vts_logo_transparent",
@@ -119,7 +119,7 @@
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Rotate Model]",
       "UUID": "dev.cazzar.vtubestudio.rotatemodel",
-      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+      "PropertyInspectorPath": "PropertyInspector/DialRotate.html"
     },
     {
       "Icon": "vts_logo_transparent",
@@ -142,7 +142,7 @@
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Move X Axis]",
       "UUID": "dev.cazzar.vtubestudio.movemodel.x",
-      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+      "PropertyInspectorPath": "PropertyInspector/DialMove.html"
     },
     {
       "Icon": "vts_logo_transparent",
@@ -165,7 +165,7 @@
       "SupportedInMultiActions": true,
       "Tooltip": "VTubeStudio [Move Y Axis]",
       "UUID": "dev.cazzar.vtubestudio.movemodel.Y",
-      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
+      "PropertyInspectorPath": "PropertyInspector/DialMove.html"
     }
   ],
   "Author": "Cazzar",

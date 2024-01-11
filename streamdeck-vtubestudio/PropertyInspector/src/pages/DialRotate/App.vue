@@ -2,9 +2,9 @@
 <NotConnected v-if="!websocketConnected" />
 <div v-else>
   <div class="sdpi-item">
-    <div class="sdpi-item-label">Position ({{ currentPos }})</div>
+    <div class="sdpi-item-label">Rotation ({{ currentRotation }})</div>
     <span class="sdpi-item-value">
-      <input type="range" min="-1" max="1" step="0.01" v-model="defaultPosition">
+      <input type="range" min="0" max="360" step="0.01" v-model="defaultRotation">
     </span>
   </div>
   
@@ -34,19 +34,19 @@ export default {
   data() {
     return {
       websocketConnected: false,
-      defaultPosition: 0.0,
+      defaultRotation: 0.0,
       stepSize: 2
     }
   },
   computed: {
-    currentPos() {
-      let pos = Number(this.defaultPosition) ?? 0
+    currentRotation() {
+      let pos = Number(this.defaultRotation) ?? 0
       
-      return ((pos + 1) / 2.0).toLocaleString(undefined, { style: "percent" });
+      return pos.toLocaleString(undefined, { maximumFractionDigits: 2 }) + "°";
     }
   },
   watch: {
-    defaultPosition() {
+    defaultRotation() {
       this.saveSettings()
     },
     stepSize() {
@@ -61,7 +61,7 @@ export default {
     },
     saveSettings() {
       this.$store.state.streamDeck.saveSettings({
-        defaultPosition: this.defaultPosition,
+        defaultRotation: this.defaultPosition,
         stepSize: this.stepSize
       });
     }
@@ -69,16 +69,15 @@ export default {
   mounted() {
     this.$store.state.streamDeck.on('didReceiveSettings', payload =>
     {
-      console.log(payload)
       let settings = payload?.payload?.settings ?? this.settings
 
-      this.defaultPosition = settings.defaultPosition ?? 0.0
+      this.defaultRotation = settings.defaultRotation ?? 0.0
       this.stepSize = settings.stepSize ?? 2
     })
     this.$store.state.streamDeck.on('connected', payload => {
       let settings = payload?.payload?.settings ?? this.settings
       
-      this.defaultPosition = settings.defaultPosition ?? 0.0
+      this.defaultRotation = settings.defaultRotation ?? 0.0
       this.stepSize = settings.stepSize ?? 2
     })
     this.$store.state.streamDeck.on('sendToPropertyInspector', e => {

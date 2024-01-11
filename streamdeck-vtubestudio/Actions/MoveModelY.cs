@@ -55,9 +55,11 @@ public class MoveModelY : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, 
     
     public void DialRotate(DialRotatePayload dialRotatePayload)
     {
+        _currentPosition = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks * (Settings.StepSize / 200d)), -2, 2);
+        
         Vts.Send(new MoveModelRequest
         {
-            PositionY = Math.Clamp(_currentPosition + (dialRotatePayload.Ticks * Settings.StepSize), -2, 2),
+            PositionY = _currentPosition,
             TimeInSeconds = 0.05d,
         });
     }
@@ -71,7 +73,6 @@ public class MoveModelY : BaseAction<MoveModelX.MoveSettings>, IStreamDeckPlus, 
     
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
         VTubeStudioWebsocketClient.OnModelMove -= ModelMove;
     }
 }

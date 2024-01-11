@@ -1,9 +1,11 @@
 ﻿using System;
+using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using StreamDeckLib;
 using StreamDeckLib.Models;
 using StreamDeckLib.Models.StreamDeckPlus;
@@ -46,12 +48,18 @@ public class ZoomModelAction
             {"indicator", (int) (percentage * 100) },
         } });
     }
-    
-    public class PluginSettings;
+
+    public class PluginSettings
+    {
+        [JsonProperty("stepSize")]
+        public int StepSize { get; set; } = 2;
+        [JsonProperty("defaultZoom")]
+        public double DefaultZoom { get; set; } = 0.0d;
+    }
     
     protected override void Pressed()
     {
-        Vts.Send(new MoveModelRequest() {Size = 0});
+        Vts.Send(new MoveModelRequest() {Size = Settings.DefaultZoom});
     }
     protected override void Released()
     {
@@ -69,15 +77,20 @@ public class ZoomModelAction
 
     public void DialRotate(DialRotatePayload dialRotatePayload)
     {
-        var offset = Math.Sign(dialRotatePayload.Ticks) * Math.Pow(2, Math.Clamp(Math.Abs(dialRotatePayload.Ticks), 1, 5)) / 2;
-        
-        _currentSize  = Math.Clamp(_currentSize + offset, -100, 100);
+        _currentSize  = Math.Clamp(_currentSize + (dialRotatePayload.Ticks * Settings.StepSize), -100, 100);
 
         Vts.Send(new MoveModelRequest() {Size = _currentSize, TimeInSeconds = 0.05d});
 
         UpdateFeedback((_currentSize + 100d) / 200d);
     }
 
+    [PluginCommand("use-current")]
+    public void UseCurrent(PluginPayload pl)
+    {
+        Settings.DefaultZoom = _currentSize;
+        SaveSettings();
+    }
+    
     public void Dispose()
     {
         VTubeStudioWebsocketClient.OnCurrentModelInformation -= CurrentModelInformation;

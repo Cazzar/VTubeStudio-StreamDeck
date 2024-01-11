@@ -2,9 +2,9 @@
 <NotConnected v-if="!websocketConnected" />
 <div v-else>
   <div class="sdpi-item">
-    <div class="sdpi-item-label">Position ({{ currentPos }})</div>
+    <div class="sdpi-item-label">Zoom ({{ currentZoom }})</div>
     <span class="sdpi-item-value">
-      <input type="range" min="-1" max="1" step="0.01" v-model="defaultPosition">
+      <input type="range" min="-100" max="100" step="0.01" v-model="defaultZoom">
     </span>
   </div>
   
@@ -34,19 +34,19 @@ export default {
   data() {
     return {
       websocketConnected: false,
-      defaultPosition: 0.0,
+      defaultZoom: 0.0,
       stepSize: 2
     }
   },
   computed: {
-    currentPos() {
-      let pos = Number(this.defaultPosition) ?? 0
+    currentZoom() {
+      let pos = Number(this.defaultZoom) ?? 0
       
-      return ((pos + 1) / 2.0).toLocaleString(undefined, { style: "percent" });
+      return ((pos + 100) / 200.0).toLocaleString(undefined, { style: "percent" });
     }
   },
   watch: {
-    defaultPosition() {
+    defaultZoom() {
       this.saveSettings()
     },
     stepSize() {
@@ -61,7 +61,7 @@ export default {
     },
     saveSettings() {
       this.$store.state.streamDeck.saveSettings({
-        defaultPosition: this.defaultPosition,
+        defaultZoom: this.defaultPosition,
         stepSize: this.stepSize
       });
     }
@@ -69,16 +69,15 @@ export default {
   mounted() {
     this.$store.state.streamDeck.on('didReceiveSettings', payload =>
     {
-      console.log(payload)
       let settings = payload?.payload?.settings ?? this.settings
 
-      this.defaultPosition = settings.defaultPosition ?? 0.0
+      this.defaultZoom = settings.defaultZoom ?? 0.0
       this.stepSize = settings.stepSize ?? 2
     })
     this.$store.state.streamDeck.on('connected', payload => {
       let settings = payload?.payload?.settings ?? this.settings
       
-      this.defaultPosition = settings.defaultPosition ?? 0.0
+      this.defaultZoom = settings.defaultZoom ?? 0.0
       this.stepSize = settings.stepSize ?? 2
     })
     this.$store.state.streamDeck.on('sendToPropertyInspector', e => {
