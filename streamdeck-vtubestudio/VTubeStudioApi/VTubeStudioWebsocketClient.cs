@@ -32,6 +32,21 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
         {
             _authManager = authManager;
             _logger = logger;
+
+            OnAuthenticationResponse += HandleAuthResponse;
+        }
+
+        ~VTubeStudioWebsocketClient()
+        {
+            OnAuthenticationResponse -= HandleAuthResponse;
+        }
+
+        private void HandleAuthResponse(object? sender, ApiEventArgs<AuthenticationResponse> args)
+        {
+            if (!args.Response.Authenticated)
+                return;
+
+            Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
         }
 
         public void Send(ApiRequest request, string requestId = null)
@@ -97,13 +112,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi
             _ws.OnClose += (sender, args) => {
                 _logger.LogInformation("Disconnected from WebSocket: ({Code}) {Reason}", args.Code, args.Reason);
                 SocketClosed?.Invoke(this, args);
-            };
-            OnAuthenticationResponse += async (sender, args) =>
-            {
-                if (!args.Response.Authenticated)
-                    return;
-                
-                Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
             };
         }
 
