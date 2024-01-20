@@ -43,7 +43,6 @@ jobs:
       - name: build for osx
         run: dotnet publish -c Release --runtime osx-x64 -o build streamdeck-vtubestudio
 
-
       - uses: jossef/action-set-json-field@v1
         with:
           file: build/manifest.json
@@ -77,7 +76,9 @@ jobs:
           yarn install --frozen-lockfile
           yarn build
         working-directory: ./streamdeck-vtubestudio/PropertyInspector
-
+        env:
+          NODE_OPTIONS: "--openssl-legacy-provider"
+          
       - uses: actions/upload-artifact@v2
         with:
           name: property-inspector
