@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-rc.2.21480.5" />
+        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-rc.2.21480.5" />
+        <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+    </ItemGroup>
+
+</Project>
