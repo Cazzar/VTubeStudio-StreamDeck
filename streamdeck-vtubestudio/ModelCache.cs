@@ -14,7 +14,7 @@ namespace Cazzar.StreamDeck.VTubeStudio
         private readonly VTubeStudioWebsocketClient _vts;
         public IEnumerable<Model> Models => _models;
         
-        private List<Model> _models = new();
+        private List<Model> _models = [];
         
         private readonly Timer _updateTimer = new Timer(TimeSpan.FromMinutes(10).TotalMilliseconds);
 
@@ -29,8 +29,8 @@ namespace Cazzar.StreamDeck.VTubeStudio
             
             VTubeStudioWebsocketClient.OnAvailableModels += OnAvailableModels;
             
-            _updateTimer.Elapsed += (sender, args) => Update(); 
-            _updateTimer.Start();
+            // _updateTimer.Elapsed += (_, _) => Update(); 
+            // _updateTimer.Start();
             
         }
 
@@ -60,6 +60,6 @@ namespace Cazzar.StreamDeck.VTubeStudio
 
     public class ModelCacheUpdatedEventArgs : EventArgs
     {
-        public List<Model> Models { get; set; }
+        public List<Model> Models { get; init; }
     }
 }

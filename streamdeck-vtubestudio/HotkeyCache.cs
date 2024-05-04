@@ -31,6 +31,11 @@ namespace Cazzar.StreamDeck.VTubeStudio
             modelCache.ModelCacheUpdated += Update;
             VTubeStudioWebsocketClient.OnModelHotkeys += OnModelHotkeys;
         }
+        
+        ~HotkeyCache()
+        {
+            instances.Remove(new(this));
+        }
 
         private async void OnModelHotkeys(object sender, ApiEventArgs<ModelHotkeysResponse> e)
         {
@@ -62,7 +67,7 @@ namespace Cazzar.StreamDeck.VTubeStudio
             foreach (var model in e.Models)
             {
                 _logger.LogInformation("Requesting hotkeys for {Model} ({ModelId})", model.Name, model.Id);
-                _vts.Send(new ModelHotkeyRequest(model));
+                _vts.Send(new ModelHotkeyRequest(model.Id));
             }
         }
 

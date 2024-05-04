@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <PublishSingleFile>true</PublishSingleFile>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <RuntimeIdentifiers>win-x64;osx-x64</RuntimeIdentifiers>
@@ -39,6 +39,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StreamdeckLib\StreamdeckLib.csproj" />
+    <ProjectReference Include="..\VTubeStudioAPI\VTubeStudioAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="VTubeStudioApi\" />
   </ItemGroup>
 
 </Project>

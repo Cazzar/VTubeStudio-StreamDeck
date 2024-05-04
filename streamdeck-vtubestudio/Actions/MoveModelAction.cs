@@ -14,10 +14,9 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions
 {
     [StreamDeckAction("dev.cazzar.vtubestudio.movemodel")]
+    // ReSharper disable once ClassNeverInstantiated.Global
     class MoveModelAction : BaseAction<MoveModelAction.PluginSettings>, IDisposable
     {
-        private readonly ILogger<MoveModelAction> _logger;
-
         public class PluginSettings
         {
             [JsonProperty("seconds")]
@@ -44,7 +43,6 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         // public MoveModelAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts) : base(gsm, vts)
         public MoveModelAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<MoveModelAction> logger) : base(gsm, vts, isd, logger)
         {
-            _logger = logger;
             VTubeStudioWebsocketClient.OnCurrentModelInformation += CurrentModelInformation;
         }
 

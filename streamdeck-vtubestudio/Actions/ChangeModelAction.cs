@@ -10,20 +10,14 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions
 {
     [StreamDeckAction("dev.cazzar.vtubestudio.changemodel")]
-    public class ChangeModelAction : BaseAction<ChangeModelAction.PluginSettings>
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class ChangeModelAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<ChangeModelAction> logger, ModelCache modelCache)
+        : BaseAction<ChangeModelAction.PluginSettings>(gsm, vts, isd, logger)
     {
-        private readonly ILogger<ChangeModelAction> _logger;
-        private readonly ModelCache _modelCache;
 
         static ChangeModelAction()
         {
             VTubeStudioWebsocketClient.OnModelLoad += (sender, args) => RateLimiter.ChangeModel.Trigger();
-        }
-
-        public ChangeModelAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<ChangeModelAction> logger, ModelCache modelCache) : base(gsm, vts, isd, logger)
-        {
-            _logger = logger;
-            _modelCache = modelCache;
         }
 
         protected override void Released()
@@ -32,7 +26,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         protected override object GetClientData() => new
         {
-            Models = _modelCache.Models.Select(s => new VTubeReference { Id = s.Id, Name = s.Name }).ToList(),
+            Models = modelCache.Models.Select(s => new VTubeReference { Id = s.Id, Name = s.Name }).ToList(),
             Connected = Vts.WsIsAlive,
         };
 
@@ -65,7 +59,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
 
         private string GetTitle()
         {
-            var model = _modelCache.Models.FirstOrDefault(m => m.Id == Settings.ModelId);
+            var model = modelCache.Models.FirstOrDefault(m => m.Id == Settings.ModelId);
             return model?.Name;
         }
 
@@ -76,7 +70,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             UpdateTitle();
         }
 
-        public void UpdateTitle()
+        private void UpdateTitle()
         {
             var title = GetTitle();
 

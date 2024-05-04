@@ -25,9 +25,4 @@ namespace Cazzar.StreamDeck.VTubeStudio
             }
         }
     }
-
-    public interface IAuthManger
-    {
-        public string Token { get; set; }
-    }
 }

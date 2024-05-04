@@ -49,7 +49,7 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (!string.IsNullOrEmpty(Settings.ModelId) && _hotkeyCache.Hotkeys != null)
             {
                 _hotkeyCache.Hotkeys.TryGetValue(Settings.ModelId, out var keys);
-                hotkeys = keys?.Select(s => new VTubeReference { Id = s.Id, Name = $"{s.Name} - ({s.ButtonTitle})", }).ToList() ?? new();
+                hotkeys = keys?.Select(s => new VTubeReference { Id = s.Id, Name = $"{s.Name} - ({s.GetHotkeyButtonTitle()})", }).ToList() ?? new();
             }
 
             return new { Models = models, Hotkeys = hotkeys, Connected = Vts.IsAuthed };
@@ -91,10 +91,10 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             if (!hotkeys.ContainsKey(Settings.ModelId)) return "";
 
             var hotkey = hotkeys[Settings.ModelId]?.FirstOrDefault(s => s.Id == Settings.HotkeyId);
-            var title = hotkey?.ButtonTitle ?? "";
+            var title = hotkey?.GetHotkeyButtonTitle() ?? "";
 
             if (string.IsNullOrWhiteSpace(title) && hotkey != null)
-                title = hotkey.ButtonTitle;
+                title = hotkey.GetHotkeyButtonTitle();
             return title;
         }
 
