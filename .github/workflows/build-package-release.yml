@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
@@ -35,7 +35,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: build for windows
         run: dotnet publish -c Release --runtime win-x64 -o build streamdeck-vtubestudio
@@ -53,7 +53,7 @@ jobs:
       - name: print manifest
         run: Get-Content build/manifest.json
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: binary-out
           path: build/
@@ -70,7 +70,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: build property inspector
         run: |
@@ -80,7 +80,7 @@ jobs:
         env:
           NODE_OPTIONS: "--openssl-legacy-provider"
           
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: property-inspector
           path: ./streamdeck-vtubestudio/PropertyInspector/dist/
@@ -97,12 +97,12 @@ jobs:
       - property-inspector
     steps:
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: binary-out
           path: ${{ matrix.plugin }}.sdPlugin
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: property-inspector
           path: ${{ matrix.plugin }}.sdPlugin/PropertyInspector
@@ -115,7 +115,7 @@ jobs:
       - name: make sdPlugin package
         run: ./DistributionTool.exe -b -i ${{ matrix.plugin }}.sdPlugin -o .
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: streamDeckPlugin
           path: ${{ matrix.plugin }}.streamDeckPlugin
@@ -131,7 +131,7 @@ jobs:
       - bundle
       - version
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: streamDeckPlugin
           path: .
