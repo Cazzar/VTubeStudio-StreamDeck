@@ -50,6 +50,8 @@ public enum ResponseType
     InjectParameterDataResponse,
     EventSubscriptionResponse,
     ModelMovedEvent,
+    ModelConfigChangedEvent,
+    HotkeyTriggeredEvent,
 }
 
 /// <summary>

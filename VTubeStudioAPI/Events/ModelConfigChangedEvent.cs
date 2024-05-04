@@ -2,10 +2,10 @@
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 
-public class ModelConfigModifiedEvent
+public class ModelConfigChangedEvent
 {
     [JsonProperty("modelID")]
-    public string Id { get; set; }
+    public string ModelId { get; set; }
     
     [JsonProperty("modelName")]
     public string Name { get; set; }

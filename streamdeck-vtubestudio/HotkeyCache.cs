@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
+using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
@@ -30,8 +31,17 @@ namespace Cazzar.StreamDeck.VTubeStudio
             _logger = logger;
             modelCache.ModelCacheUpdated += Update;
             VTubeStudioWebsocketClient.OnModelHotkeys += OnModelHotkeys;
+            VTubeStudioWebsocketClient.OnModelConfigChangedEvent += OnModelConfigChangedEvent;
         }
-        
+        private void OnModelConfigChangedEvent(object sender, ApiEventArgs<ModelConfigChangedEvent> e)
+        {
+            if (!e.Response.HotkeyConfigChanged)
+                return;
+
+            _logger.LogInformation("Requesting hotkeys for {ModelId}", e.Response.ModelId);
+            _vts.Send(new ModelHotkeyRequest(e.Response.ModelId));
+        }
+
         ~HotkeyCache()
         {
             instances.Remove(new(this));

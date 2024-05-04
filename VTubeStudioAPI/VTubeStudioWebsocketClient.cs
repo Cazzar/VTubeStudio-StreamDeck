@@ -41,6 +41,8 @@ public class VTubeStudioWebsocketClient
             return;
 
         Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
+        Send(new EventSubscriptionRequest<object>("ModelConfigChangedEvent"));
+        // Send(new EventSubscriptionRequest<object>("HotkeyTriggeredEvent"));
     }
 
     public void Send(ApiRequest request, string? requestId = null)
@@ -187,6 +189,12 @@ public class VTubeStudioWebsocketClient
             case ResponseType.ModelMovedEvent:
                 OnModelMove?.Invoke(this, new (response.Data!.ToObject<ModelMoveEvent>()!));
                 break;
+            case ResponseType.ModelConfigChangedEvent:
+                OnModelConfigChangedEvent?.Invoke(this, new (response.Data!.ToObject<ModelConfigChangedEvent>()!));
+                break;
+            // case ResponseType.HotkeyTriggeredEvent:
+            //     OnHotkeyTriggeredEvent?.Invoke(this, new (response.Data!.ToObject<HotkeyTriggeredEvent>()!));
+            //     break;
             default: throw new ArgumentOutOfRangeException();
         }
     }
@@ -225,6 +233,6 @@ public class VTubeStudioWebsocketClient
     public static event EventHandler<ApiEventArgs<HotkeyTriggerResponse>>? OnHotkeyTriggered;
     public static event EventHandler<ApiEventArgs<CurrentModelResponse>>? OnCurrentModelInformation;
     public static event EventHandler<ApiEventArgs<ModelMoveEvent>>? OnModelMove;
-    public static event EventHandler<ApiEventArgs<ModelConfigModifiedEvent>>? OnModelConfigModified;
+    public static event EventHandler<ApiEventArgs<ModelConfigChangedEvent>>? OnModelConfigChangedEvent;
 #endregion
 }
