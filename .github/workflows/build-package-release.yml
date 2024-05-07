@@ -87,11 +87,6 @@ jobs:
 
   bundle:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        plugin:
-          - dev.cazzar.streamdeck.vtubestudio
-          - dev.cazzar.streamdeck.vtubestudio.movemodel
     needs:
       - binary
       - property-inspector
@@ -100,12 +95,12 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: binary-out
-          path: ${{ matrix.plugin }}.sdPlugin
+          path: dev.cazzar.streamdeck.vtubestudio.sdPlugin
 
       - uses: actions/download-artifact@v4
         with:
           name: property-inspector
-          path: ${{ matrix.plugin }}.sdPlugin/PropertyInspector
+          path: dev.cazzar.streamdeck.vtubestudio.sdPlugin/PropertyInspector
 
       - name: download dist tool
         run: |
@@ -113,20 +108,15 @@ jobs:
           Expand-Archive DistributionTool.zip -DestinationPath .
 
       - name: make sdPlugin package
-        run: ./DistributionTool.exe -b -i ${{ matrix.plugin }}.sdPlugin -o .
+        run: ./DistributionTool.exe -b -i dev.cazzar.streamdeck.vtubestudio.sdPlugin -o .
 
       - uses: actions/upload-artifact@v4
         with:
           name: streamDeckPlugin
-          path: ${{ matrix.plugin }}.streamDeckPlugin
+          path: dev.cazzar.streamdeck.vtubestudio.streamDeckPlugin
 
   release:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        plugin:
-          - dev.cazzar.streamdeck.vtubestudio
-          - dev.cazzar.streamdeck.vtubestudio.movemodel
     needs:
       - bundle
       - version
@@ -138,7 +128,7 @@ jobs:
       - name: "Release ${{ needs.version.outputs.ver }}"
         uses: softprops/action-gh-release@v1
         with:
-          files: ./${{ matrix.plugin }}.streamDeckPlugin
+          files: ./dev.cazzar.streamdeck.vtubestudio.streamDeckPlugin
           tag_name: ${{ needs.version.outputs.ver }}
           prerelease: true
           fail_on_unmatched_files: true
