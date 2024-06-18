@@ -166,6 +166,21 @@
       "Tooltip": "VTubeStudio [Move Y Axis]",
       "UUID": "dev.cazzar.vtubestudio.movemodel.Y",
       "PropertyInspectorPath": "PropertyInspector/DialMove.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Hold To Zoom",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Hold To Zoom]",
+      "UUID": "dev.cazzar.vtubestudio.holdtozoom",
+      "PropertyInspectorPath": "PropertyInspector/TempZoom.html"
     }
   ],
   "Author": "Cazzar",
