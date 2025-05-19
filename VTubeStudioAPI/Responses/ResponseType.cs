@@ -23,6 +23,8 @@ public enum RequestType
     ParameterDeletionRequest,
     InjectParameterDataRequest,
     EventSubscriptionRequest,
+    ExpressionStateRequest,
+    ExpressionActivationRequest,
 }
 
 public enum ResponseType
@@ -52,6 +54,8 @@ public enum ResponseType
     ModelMovedEvent,
     ModelConfigChangedEvent,
     HotkeyTriggeredEvent,
+    ExpressionStateResponse,
+    ExpressionActivationResponse,
 }
 
 /// <summary>
