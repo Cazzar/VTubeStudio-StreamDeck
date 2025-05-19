@@ -184,7 +184,7 @@
     },
     {
       "Icon": "vts_logo_transparent",
-      "Name": "Hold To Zoom",
+      "Name": "Expression Toggle",
       "States": [
         {
           "Image": "vts_logo_transparent",

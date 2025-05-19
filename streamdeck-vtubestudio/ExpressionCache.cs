@@ -21,10 +21,10 @@ public class ExpressionCache
 
     private static readonly List<WeakReference<ExpressionCache>> instances = new();
 
-    public ReadOnlyCollection<Expression> Expressions { get; set; }
-    public string LastModelId { get; set; }
-    public string LastModelName { get; set; }
-    public bool ModelLoaded { get; set; }
+    public ReadOnlyCollection<Expression> Expressions { get; set; } = new List<Expression>().AsReadOnly();
+    public string LastModelId { get; set; } = string.Empty;
+    public string LastModelName { get; set; } = string.Empty;
+    public bool ModelLoaded { get; set; } = false;
 
 
     public ExpressionCache(ModelCache modelCache, VTubeStudioWebsocketClient vts, ILogger<ExpressionCache> logger)
@@ -82,7 +82,16 @@ public class ExpressionCache
 
     ~ExpressionCache()
     {
-        instances.Remove(new(this));
+    ~ExpressionCache()
+    {
+        instances.RemoveAll(wr => !wr.TryGetTarget(out _) || 
+                               (wr.TryGetTarget(out var cache) && cache == this));
+        VTubeStudioWebsocketClient.OnExpressionState -= OnExpressionState;
+        VTubeStudioWebsocketClient.OnModelLoad -= Refresh;
+        VTubeStudioWebsocketClient.OnHotkeyTriggeredEvent -= RefreshHotkey;
+        VTubeStudioWebsocketClient.OnCurrentModelInformation -= Refresh;
+        VTubeStudioWebsocketClient.OnAuthenticationResponse -= HandleAuthenticated;
+    }
         VTubeStudioWebsocketClient.OnExpressionState -= OnExpressionState;
         VTubeStudioWebsocketClient.OnModelLoad -= Refresh;
         VTubeStudioWebsocketClient.OnHotkeyTriggeredEvent -= RefreshHotkey;

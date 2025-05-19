@@ -29,21 +29,21 @@ public class ExpressionToggleAction : BaseAction<ExpressionToggleAction.Expressi
         _expressionCache = expressionCache;
     }
     
-    protected override void Pressed()
-    {
-        // if (!_expressionCache.ModelLoaded)
-        //     return;
+protected override void Pressed()
+{
+    if (!_expressionCache.ModelLoaded)
+        return;
 
-        var activate = !_expressionCache.Expressions.FirstOrDefault(e => e.File == Settings.Expression)?.Active ?? false;
-        
-        Vts.Send(new ExpressionActivationRequest(Settings.Expression, activate));
-        
-        Connection.SendMessage(new SetStateRequest
-        {
-            Payload = new ((uint) (activate ? 1 : 0)),
-            Context = ContextId,
-        });
-    }
+    var activate = !_expressionCache.Expressions.FirstOrDefault(e => e.File == Settings.Expression)?.Active ?? false;
+    
+    Vts.Send(new ExpressionActivationRequest(Settings.Expression, activate, Settings.FadeTime));
+    
+    Connection.SendMessage(new SetStateRequest
+    {
+        Payload = new ((uint) (activate ? 1 : 0)),
+        Context = ContextId,
+    });
+}
 
     public override void Tick()
     {
@@ -59,7 +59,7 @@ public class ExpressionToggleAction : BaseAction<ExpressionToggleAction.Expressi
 
     protected override object GetClientData() => new
     {
-        sxpressions = _expressionCache.Expressions.DistinctBy(e => e.File).Select(e => new { e.Name, e.File }),
+        expressions = _expressionCache.Expressions.DistinctBy(e => e.File).Select(e => new { e.Name, e.File }),
     };
 
     protected override void Released()
