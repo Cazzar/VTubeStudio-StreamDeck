@@ -203,6 +203,9 @@
     {
       "Platform": "mac",
       "MinimumVersion": "10.11"
+    },
+    {
+      "Platform": "linux"
     }
   ],
   "SDKVersion": 2,
