@@ -181,6 +181,26 @@
       "Tooltip": "VTubeStudio [Hold To Zoom]",
       "UUID": "dev.cazzar.vtubestudio.holdtozoom",
       "PropertyInspectorPath": "PropertyInspector/TempZoom.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Expression Toggle",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        },
+        {
+          "Image": "vts_logo_transparent_darker",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Expression Toggle]",
+      "UUID": "dev.cazzar.vtubestudio.expressiontoggle",
+      "PropertyInspectorPath": "PropertyInspector/NoSettings.html"
     }
   ],
   "Author": "Cazzar",

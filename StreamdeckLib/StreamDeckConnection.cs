@@ -96,10 +96,10 @@ namespace StreamDeckLib
 
                     textBuffer.Append(Encoding.UTF8.GetString(buffer, 0, result.Count));
                     if (!result.EndOfMessage) continue;
-                    _logger.LogDebug("Got JSON data: {ToString}", textBuffer.ToString());
+                    //_logger.LogDebug("Got JSON data: {ToString}", textBuffer.ToString());
                 
                     var message = JsonConvert.DeserializeObject<EventMessage>(textBuffer.ToString(), new StreamDeckMessageConverter());
-                    _logger.LogDebug("Got message of {Event} JSON data: {ToString}", message?.Event, textBuffer.ToString());
+                    //_logger.LogDebug("Got message of {Event} JSON data: {ToString}", message?.Event, textBuffer.ToString());
 
                     switch (message)
                     {
@@ -190,7 +190,7 @@ namespace StreamDeckLib
             {
                 await _send.WaitAsync();
                 var json = JsonConvert.SerializeObject(message, new JsonSerializerSettings() { ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }, });
-                _logger.LogDebug("Sending message of {Type} with JSON data {Json}", message.Event, json);
+                //_logger.LogDebug("Sending message of {Type} with JSON data {Json}", message.Event, json);
 
                 var buf = Encoding.UTF8.GetBytes(json);
                 await _socket.SendAsync(new ArraySegment<byte>(buf), WebSocketMessageType.Text, true, _cancelSource.Token);
