@@ -43,6 +43,9 @@ jobs:
 
       - name: build for osx
         run: dotnet publish -c Release --runtime osx-x64 -o build streamdeck-vtubestudio
+        
+      - name: build for Linux
+        run: dotnet publish -c Release --runtime linux-x64 --sc -o build streamdeck-vtubestudio/linux
 
       - uses: jossef/action-set-json-field@v2.2
         with:

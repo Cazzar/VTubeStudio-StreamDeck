@@ -192,6 +192,7 @@
   "CodePath": "streamdeck-vtubestudio",
   "CodePathWin": "streamdeck-vtubestudio.exe",
   "CodePathMac": "streamdeck-vtubestudio",
+  "CodePathLin": "linux/streamdeck-vtubestudio",
   "Category": "VTubeStudio [Cazzar]",
   "CategoryIcon": "vts_logo_transparent",
   "OS": [
