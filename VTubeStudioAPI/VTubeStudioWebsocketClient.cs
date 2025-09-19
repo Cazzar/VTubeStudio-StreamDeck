@@ -4,6 +4,7 @@ using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Requests;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Responses;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VTubeStudioAPI.Responses;
 using WebSocketSharp;
 
 namespace Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
@@ -42,7 +43,7 @@ public class VTubeStudioWebsocketClient
 
         Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
         Send(new EventSubscriptionRequest<object>("ModelConfigChangedEvent"));
-        // Send(new EventSubscriptionRequest<object>("HotkeyTriggeredEvent"));
+        Send(new EventSubscriptionRequest<object>("HotkeyTriggeredEvent"));
     }
 
     public void Send(ApiRequest request, string? requestId = null)
@@ -77,7 +78,7 @@ public class VTubeStudioWebsocketClient
 
     public void ConnectIfNeeded()
     {
-        _logger.LogDebug("Ws is null? {WsNull}, ws alive? {WsAlive}, trying to connect? {TryingToConnect}", _ws == null, _ws?.IsAlive, _tryingToConnect);
+        //_logger.LogDebug("Ws is null? {WsNull}, ws alive? {WsAlive}, trying to connect? {TryingToConnect}", _ws == null, _ws?.IsAlive, _tryingToConnect);
         if (_ws is not null && _ws.IsAlive) return;
         if (_tryingToConnect) return;
 
@@ -86,6 +87,7 @@ public class VTubeStudioWebsocketClient
             () =>
             {
                 Connect();
+                _tryingToConnect = false;
                 _tryingToConnect = false;
             }
         );
@@ -131,6 +133,7 @@ public class VTubeStudioWebsocketClient
 
         var response = JsonConvert.DeserializeObject<ApiResponse>(e.Data);
         if (response is null) return;
+        _logger.LogDebug("Got message: {JsonString}", e.Data);
         _logger.LogDebug("Got message of type: {Type}", response.MessageType);
 
         switch (response.MessageType)
@@ -192,9 +195,15 @@ public class VTubeStudioWebsocketClient
             case ResponseType.ModelConfigChangedEvent:
                 OnModelConfigChangedEvent?.Invoke(this, new (response.Data!.ToObject<ModelConfigChangedEvent>()!));
                 break;
-            // case ResponseType.HotkeyTriggeredEvent:
-            //     OnHotkeyTriggeredEvent?.Invoke(this, new (response.Data!.ToObject<HotkeyTriggeredEvent>()!));
-            //     break;
+            case ResponseType.HotkeyTriggeredEvent:
+                OnHotkeyTriggeredEvent?.Invoke(this, new (response.Data!.ToObject<HotkeyTriggeredEvent>()!));
+                break;
+            case ResponseType.ExpressionStateResponse:
+                OnExpressionState?.Invoke(this, new (response.Data!.ToObject<ExpressionStateResponse>()!));
+                break;
+            case ResponseType.ExpressionActivationResponse: 
+                OnExpressionActivation?.Invoke(this, EventArgs.Empty);
+                break;
             default: throw new ArgumentOutOfRangeException();
         }
     }
@@ -234,5 +243,8 @@ public class VTubeStudioWebsocketClient
     public static event EventHandler<ApiEventArgs<CurrentModelResponse>>? OnCurrentModelInformation;
     public static event EventHandler<ApiEventArgs<ModelMoveEvent>>? OnModelMove;
     public static event EventHandler<ApiEventArgs<ModelConfigChangedEvent>>? OnModelConfigChangedEvent;
+    public static event EventHandler<ApiEventArgs<HotkeyTriggeredEvent>>? OnHotkeyTriggeredEvent;
+    public static event EventHandler<ApiEventArgs<ExpressionStateResponse>>? OnExpressionState;
+    public static event EventHandler<EventArgs>? OnExpressionActivation;
 #endregion
 }
