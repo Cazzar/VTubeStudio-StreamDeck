@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cazzar.StreamDeck.VTubeStudio.Models;
@@ -11,7 +12,7 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.toggleexpression")]
-public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSettings, ToggleExpressionAction.State>
+public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSettings, ToggleExpressionAction.State>, IDisposable
 {
     public enum State : uint { Inactive = 0, Active = 1 }
 
@@ -89,5 +90,10 @@ public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSe
     {
         _expressionCache.Refresh();
         await UpdateClient();
+    }
+
+    public void Dispose()
+    {
+        _expressionCache.Updated -= OnCacheUpdated;
     }
 }

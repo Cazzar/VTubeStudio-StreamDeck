@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
@@ -9,7 +10,7 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.holdexpression")]
-public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettings, HoldExpressionAction.State>
+public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettings, HoldExpressionAction.State>, IDisposable
 {
     public enum State : uint { Inactive = 0, Active = 1 }
 
@@ -78,5 +79,10 @@ public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettin
     {
         _expressionCache.Refresh();
         await UpdateClient();
+    }
+
+    public void Dispose()
+    {
+        _expressionCache.Updated -= OnCacheUpdated;
     }
 }
