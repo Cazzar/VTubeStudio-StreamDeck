@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Cazzar.StreamDeck.VTubeStudio.Models;
@@ -116,6 +117,22 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
         {
             Vts.ConnectIfNeeded();
             await UpdateClient();
+        }
+    }
+
+    public abstract class BaseAction<TSettings, TState> : BaseAction<TSettings>
+        where TSettings : new()
+        where TState : struct, Enum
+    {
+        public TState CurrentState { get; private set; }
+
+        protected BaseAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger logger)
+            : base(gsm, vts, isd, logger) { }
+
+        protected void SetState(TState state)
+        {
+            CurrentState = state;
+            SetState((uint)(object)state);
         }
     }
 }

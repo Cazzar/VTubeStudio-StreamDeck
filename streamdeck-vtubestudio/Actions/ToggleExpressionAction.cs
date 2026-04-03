@@ -11,8 +11,10 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.toggleexpression")]
-public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSettings>
+public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSettings, ToggleExpressionAction.State>
 {
+    public enum State : uint { Inactive = 0, Active = 1 }
+
     public class PluginSettings
     {
         [JsonProperty("expressionFile")]
@@ -23,7 +25,6 @@ public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSe
     }
 
     private readonly ExpressionStateCache _expressionCache;
-    private bool _isActive;
     private string _expressionName = string.Empty;
 
     public ToggleExpressionAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<ToggleExpressionAction> logger, ExpressionStateCache expressionCache) : base(gsm, vts, isd, logger)
@@ -46,11 +47,9 @@ public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSe
 
         _expressionName = expr.Name;
 
-        var wasActive = _isActive;
-        _isActive = expr.Active;
-
-        if (wasActive != _isActive)
-            SetState(_isActive ? 1u : 0u);
+        var newState = expr.Active ? State.Active : State.Inactive;
+        if (newState != CurrentState)
+            SetState(newState);
 
         if (Settings.ShowName && !string.IsNullOrEmpty(_expressionName))
             SetTitle(_expressionName);
@@ -60,9 +59,9 @@ public class ToggleExpressionAction : BaseAction<ToggleExpressionAction.PluginSe
     {
         if (string.IsNullOrEmpty(Settings.ExpressionFile)) return;
 
-        _isActive = !_isActive;
-        SetState(_isActive ? 1u : 0u);
-        Vts.Send(new ExpressionActivationRequest(Settings.ExpressionFile, _isActive));
+        var newState = CurrentState == State.Active ? State.Inactive : State.Active;
+        SetState(newState);
+        Vts.Send(new ExpressionActivationRequest(Settings.ExpressionFile, newState == State.Active));
         _expressionCache.Refresh();
     }
 

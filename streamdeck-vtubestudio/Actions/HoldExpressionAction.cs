@@ -9,8 +9,10 @@ using StreamDeckLib;
 namespace Cazzar.StreamDeck.VTubeStudio.Actions;
 
 [StreamDeckAction("dev.cazzar.vtubestudio.holdexpression")]
-public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettings>
+public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettings, HoldExpressionAction.State>
 {
+    public enum State : uint { Inactive = 0, Active = 1 }
+
     public class PluginSettings
     {
         [JsonProperty("expressionFile")]
@@ -42,14 +44,14 @@ public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettin
     protected override void Pressed()
     {
         if (string.IsNullOrEmpty(Settings.ExpressionFile)) return;
-        SetState(1u);
+        SetState(State.Active);
         Vts.Send(new ExpressionActivationRequest(Settings.ExpressionFile, true));
     }
 
     protected override void Released()
     {
         if (string.IsNullOrEmpty(Settings.ExpressionFile)) return;
-        SetState(0u);
+        SetState(State.Inactive);
         Vts.Send(new ExpressionActivationRequest(Settings.ExpressionFile, false));
         _expressionCache.Refresh();
     }
