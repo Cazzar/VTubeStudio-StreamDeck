@@ -9,6 +9,7 @@ module.exports = {
         'ScaleModel': './src/pages/ScaleModel/main.js',
         'TempZoom': './src/pages/TempZoom/main.js',
         'NoSettings': './src/pages/NoSettings/main.js',
+        'ExpressionToggle': './src/pages/ExpressionToggle/main.js',
     },
     publicPath: './'
 }

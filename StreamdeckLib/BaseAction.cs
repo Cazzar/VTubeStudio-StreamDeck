@@ -54,5 +54,10 @@ namespace StreamDeckLib
         {
             await Connection.SendMessage(new SetTitle() { Context = ContextId, Payload = new(title, 0, 0)});
         }
+
+        public async void SetState(uint state)
+        {
+            await Connection.SendMessage(new SetStateRequest() { Context = ContextId, Payload = new StatePayload(state) });
+        }
     }
 }
