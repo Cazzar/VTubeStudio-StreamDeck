@@ -18,8 +18,7 @@
   <div class="sdpi-item">
     <div class="sdpi-item-label">Tools</div>
     <button class="sdpi-item-value" id="force-refresh" @click="sendAction('refresh', null)">Refresh</button>
-    <button v-if="!websocketConnected" class="sdpi-item-value" @click="sendAction('force-reconnect', null)" id="force-reconnect">Reconnect</button>
-    <span v-else class="sdpi-item-value">VTS Connected!</span>
+    <span class="sdpi-item-value">VTS Connected!</span>
   </div>
 </div>
 </template>
