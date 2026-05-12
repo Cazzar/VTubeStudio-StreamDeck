@@ -51,6 +51,7 @@ namespace Cazzar.StreamDeck.VTubeStudio
                         services.AddSingleton<IGlobalSettingsHandler>((sp) => sp.GetService<GlobalSettingsManager>()!);
                         services.AddSingleton<HotkeyCache>();
                         services.AddSingleton<ModelCache>();
+                        services.AddSingleton<ExpressionStateCache>();
                         services.AddLogging(
                             logging =>
                             {

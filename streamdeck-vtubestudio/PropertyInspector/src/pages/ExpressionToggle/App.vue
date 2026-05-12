@@ -1,26 +1,19 @@
 <template>
 <NotConnected v-if="!websocketConnected" />
 <div v-else>
-  <div class="sdpi-item" id="select_model">
-    <div class="sdpi-item-label">Model</div>
-    <select class="sdpi-item-value select" id="hotkeyId" v-model="settings.modelId">
-      <option v-for="model in models" v-bind:value="model.id" v-bind:key="model.id">
-        {{ model.name }}
-      </option>
-    </select>
-  </div>
-  <div class="sdpi-item" id="select_hotkey">
-    <div class="sdpi-item-label">Hotkey</div>
-    <select class="sdpi-item-value select" id="hotkeyId" v-model="settings.hotkeyId">
-      <option v-for="hotkey in hotkeys" v-bind:value="hotkey.id" v-bind:key="hotkey.id">
-        {{ hotkey.name }}
+  <div class="sdpi-item" id="select_expression">
+    <div class="sdpi-item-label">Expression</div>
+    <select class="sdpi-item-value select" id="expressionFile" v-model="settings.expressionFile">
+      <option value="">-- Select expression --</option>
+      <option v-for="expr in expressions" v-bind:value="expr.id" v-bind:key="expr.id">
+        {{ expr.name }}
       </option>
     </select>
   </div>
   <div type="checkbox" class="sdpi-item">
     <div class="sdpi-item-label">Options</div>
     <input class="sdpi-item-value" id="showName" type="checkbox" v-model="settings.showName">
-    <label for="showName"><span></span>Show action name on key</label>
+    <label for="showName"><span></span>Show expression name on key</label>
   </div>
   <div class="sdpi-item">
     <div class="sdpi-item-label">Tools</div>
@@ -40,12 +33,10 @@ export default {
   },
   data() {
     return {
-      hotkeys: [],
-      models: [],
+      expressions: [],
       websocketConnected: false,
       settings: {
-        hotkeyId: null,
-        modelId: null,
+        expressionFile: '',
         showName: true,
       }
     }
@@ -69,16 +60,15 @@ export default {
     this.$store.state.streamDeck.on('didReceiveSettings', data => this.settings = data?.payload?.settings ?? this.settings)
     this.$store.state.streamDeck.on('connected', data => this.settings = data?.payload?.settings ?? this.settings)
     this.$store.state.streamDeck.on('sendToPropertyInspector', e => {
-      this.models = e.models ?? [];
-      this.hotkeys = e.hotkeys ?? [];
-      this.websocketConnected = e.connected ?? false
+      this.expressions = e.expressions ?? [];
+      this.websocketConnected = e.connected ?? false;
     })
   },
 }
 </script>
 
 <style>
-#hotkeyId {
+#expressionFile {
   width: 1vw;
   padding-right: 26px;
   text-overflow: ellipsis;

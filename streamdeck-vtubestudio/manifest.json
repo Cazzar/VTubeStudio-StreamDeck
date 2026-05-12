@@ -181,6 +181,50 @@
       "Tooltip": "VTubeStudio [Hold To Zoom]",
       "UUID": "dev.cazzar.vtubestudio.holdtozoom",
       "PropertyInspectorPath": "PropertyInspector/TempZoom.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Toggle Expression",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "Name": "Inactive",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        },
+        {
+          "Image": "vts_logo_transparent",
+          "Name": "Active",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": true,
+      "Tooltip": "VTubeStudio [Toggle Expression] — shows live on/off state",
+      "UUID": "dev.cazzar.vtubestudio.toggleexpression",
+      "PropertyInspectorPath": "PropertyInspector/ExpressionToggle.html"
+    },
+    {
+      "Icon": "vts_logo_transparent",
+      "Name": "Hold Expression",
+      "States": [
+        {
+          "Image": "vts_logo_transparent",
+          "Name": "Inactive",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        },
+        {
+          "Image": "vts_logo_transparent",
+          "Name": "Active",
+          "TitleAlignment": "bottom",
+          "FontSize": "10"
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "Tooltip": "VTubeStudio [Hold Expression] — active while held, deactivates on release",
+      "UUID": "dev.cazzar.vtubestudio.holdexpression",
+      "PropertyInspectorPath": "PropertyInspector/ExpressionToggle.html"
     }
   ],
   "Author": "Cazzar",
