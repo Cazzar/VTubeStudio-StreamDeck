@@ -1,10 +1,18 @@
 <template>
 <NotConnected v-if="!websocketConnected" />
 <div v-else>
+  <div class="sdpi-item" id="select_model">
+    <div class="sdpi-item-label">Model</div>
+    <select class="sdpi-item-value select" id="modelId" v-model="settings.modelId">
+      <option v-for="model in models" v-bind:value="model.id" v-bind:key="model.id">
+        {{ model.name }}
+      </option>
+    </select>
+    <button class="sdpi-item-value" @click="sendAction('select-current-model', null)">Current</button>
+  </div>
   <div class="sdpi-item" id="select_expression">
     <div class="sdpi-item-label">Expression</div>
     <select class="sdpi-item-value select" id="expressionFile" v-model="settings.expressionFile">
-      <option value="">-- Select expression --</option>
       <option v-for="expr in expressions" v-bind:value="expr.id" v-bind:key="expr.id">
         {{ expr.name }}
       </option>
@@ -34,9 +42,11 @@ export default {
   data() {
     return {
       expressions: [],
+      models: [],
       websocketConnected: false,
       settings: {
-        expressionFile: '',
+        modelId: null,
+        expressionFile: null,
         showName: true,
       }
     }
@@ -60,6 +70,7 @@ export default {
     this.$store.state.streamDeck.on('didReceiveSettings', data => this.settings = data?.payload?.settings ?? this.settings)
     this.$store.state.streamDeck.on('connected', data => this.settings = data?.payload?.settings ?? this.settings)
     this.$store.state.streamDeck.on('sendToPropertyInspector', e => {
+      this.models = e.models ?? [];
       this.expressions = e.expressions ?? [];
       this.websocketConnected = e.connected ?? false;
     })
@@ -68,7 +79,7 @@ export default {
 </script>
 
 <style>
-#expressionFile {
+#modelId, #expressionFile {
   width: 1vw;
   padding-right: 26px;
   text-overflow: ellipsis;

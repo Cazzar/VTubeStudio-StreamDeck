@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Cazzar.StreamDeck.VTubeStudio.Models;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
@@ -16,6 +17,9 @@ public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettin
 
     public class PluginSettings
     {
+        [JsonProperty("modelId")]
+        public string ModelId { get; set; } = string.Empty;
+
         [JsonProperty("expressionFile")]
         public string ExpressionFile { get; set; } = string.Empty;
 
@@ -24,18 +28,21 @@ public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettin
     }
 
     private readonly ExpressionStateCache _expressionCache;
+    private readonly ModelCache _modelCache;
     private string _expressionName = string.Empty;
 
-    public HoldExpressionAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<HoldExpressionAction> logger, ExpressionStateCache expressionCache) : base(gsm, vts, isd, logger)
+    public HoldExpressionAction(GlobalSettingsManager gsm, VTubeStudioWebsocketClient vts, IStreamDeckConnection isd, ILogger<HoldExpressionAction> logger, ExpressionStateCache expressionCache, ModelCache modelCache) : base(gsm, vts, isd, logger)
     {
         _expressionCache = expressionCache;
+        _modelCache = modelCache;
         _expressionCache.Updated += OnCacheUpdated;
     }
 
     private void OnCacheUpdated(object sender, ExpressionStateCacheUpdatedEventArgs e)
     {
-        if (string.IsNullOrEmpty(Settings.ExpressionFile)) return;
-        var expr = e.Expressions.FirstOrDefault(x => x.File == Settings.ExpressionFile);
+        if (string.IsNullOrEmpty(Settings.ModelId) || string.IsNullOrEmpty(Settings.ExpressionFile)) return;
+        if (!e.Expressions.TryGetValue(Settings.ModelId, out var expressions)) return;
+        var expr = expressions.FirstOrDefault(x => x.File == Settings.ExpressionFile);
         if (expr == null) return;
         _expressionName = expr.Name;
         if (Settings.ShowName && !string.IsNullOrEmpty(_expressionName))
@@ -59,25 +66,40 @@ public class HoldExpressionAction : BaseAction<HoldExpressionAction.PluginSettin
 
     protected override object GetClientData()
     {
-        var expressions = _expressionCache.Expressions
-            .Select(e => new VTubeReference { Id = e.File, Name = e.Name })
-            .ToList();
-        return new { Expressions = expressions, Connected = Vts.IsAuthed };
+        var models = _modelCache.Models.Select(s => new VTubeReference { Id = s.Id, Name = s.Name }).ToList();
+        List<VTubeReference> expressions = new();
+        if (!string.IsNullOrEmpty(Settings.ModelId) && _expressionCache.Expressions.TryGetValue(Settings.ModelId, out var exprs))
+            expressions = exprs.Select(e => new VTubeReference { Id = e.File, Name = e.Name }).ToList();
+        return new { Models = models, Expressions = expressions, Connected = Vts.IsAuthed };
     }
 
     protected override void SettingsUpdated(PluginSettings oldSettings, PluginSettings newSettings)
     {
         if (!newSettings.ShowName && oldSettings.ShowName)
             SetTitle(null);
+        else if (newSettings.ShowName && !oldSettings.ShowName && !string.IsNullOrEmpty(_expressionName))
+            SetTitle(_expressionName);
 
-        if (newSettings.ExpressionFile != oldSettings.ExpressionFile)
+        if (newSettings.ModelId != oldSettings.ModelId || newSettings.ExpressionFile != oldSettings.ExpressionFile)
+        {
+            _expressionName = string.Empty;
             OnCacheUpdated(this, new() { Expressions = _expressionCache.Expressions });
+        }
     }
 
     [PluginCommand("refresh")]
     public override async void Refresh(PluginPayload pl)
     {
         _expressionCache.Refresh();
+        await UpdateClient();
+    }
+
+    [PluginCommand("select-current-model")]
+    public async void SelectCurrentModel(PluginPayload pl)
+    {
+        if (string.IsNullOrEmpty(_modelCache.CurrentModelId)) return;
+        Settings.ModelId = _modelCache.CurrentModelId;
+        SaveSettings();
         await UpdateClient();
     }
 

@@ -3,11 +3,12 @@
 <div v-else>
   <div class="sdpi-item" id="select_model">
     <div class="sdpi-item-label">Model</div>
-    <select class="sdpi-item-value select" id="hotkeyId" v-model="settings.modelId">
+    <select class="sdpi-item-value select" id="modelSelectId" v-model="settings.modelId">
       <option v-for="model in models" v-bind:value="model.id" v-bind:key="model.id">
         {{ model.name }}
       </option>
     </select>
+    <button class="sdpi-item-value" @click="sendAction('select-current-model', null)">Current</button>
   </div>
   <div class="sdpi-item" id="select_hotkey">
     <div class="sdpi-item-label">Hotkey</div>

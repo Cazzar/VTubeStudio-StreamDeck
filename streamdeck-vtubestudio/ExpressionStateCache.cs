@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi;
 using Cazzar.StreamDeck.VTubeStudio.VTubeStudioApi.Events;
@@ -13,7 +14,8 @@ namespace Cazzar.StreamDeck.VTubeStudio
         private readonly VTubeStudioWebsocketClient _vts;
         private readonly ILogger<ExpressionStateCache> _logger;
 
-        public List<Expression> Expressions { get; private set; } = new();
+        private readonly ConcurrentDictionary<string, List<Expression>> _cache = new();
+        public IDictionary<string, List<Expression>> Expressions => _cache;
 
         public ExpressionStateCache(VTubeStudioWebsocketClient vts, ILogger<ExpressionStateCache> logger)
         {
@@ -50,9 +52,10 @@ namespace Cazzar.StreamDeck.VTubeStudio
 
         private void OnExpressionState(object sender, ApiEventArgs<ExpressionStateResponse> e)
         {
-            Expressions = e.Response.Expressions;
-            _logger.LogDebug("Expression states updated, {Count} expressions", Expressions.Count);
-            Updated?.Invoke(this, new() { Expressions = Expressions });
+            if (string.IsNullOrEmpty(e.Response.ModelId)) return;
+            _cache.AddOrUpdate(e.Response.ModelId, e.Response.Expressions, (_, _) => e.Response.Expressions);
+            _logger.LogDebug("Expression states updated for {ModelId}, {Count} expressions", e.Response.ModelId, e.Response.Expressions.Count);
+            Updated?.Invoke(this, new() { Expressions = _cache });
         }
 
         public void Refresh()
@@ -66,6 +69,6 @@ namespace Cazzar.StreamDeck.VTubeStudio
 
     public class ExpressionStateCacheUpdatedEventArgs : EventArgs
     {
-        public List<Expression> Expressions { get; init; } = new();
+        public IDictionary<string, List<Expression>> Expressions { get; init; } = new Dictionary<string, List<Expression>>();
     }
 }

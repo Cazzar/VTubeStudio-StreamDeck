@@ -69,6 +69,15 @@ namespace Cazzar.StreamDeck.VTubeStudio.Actions
             base.Refresh(pl);
         }
 
+        [PluginCommand("select-current-model")]
+        public async void SelectCurrentModel(PluginPayload pl)
+        {
+            if (string.IsNullOrEmpty(_modelCache.CurrentModelId)) return;
+            Settings.ModelId = _modelCache.CurrentModelId;
+            SaveSettings();
+            await UpdateClient();
+        }
+
         public override void Tick()
         {
             base.Tick();
