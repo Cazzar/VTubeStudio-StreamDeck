@@ -44,6 +44,7 @@ public class VTubeStudioWebsocketClient
         Send(new EventSubscriptionRequest<object>("ModelConfigChangedEvent"));
         Send(new EventSubscriptionRequest<object>("HotkeyTriggeredEvent"));
         Send(new EventSubscriptionRequest<object>("ModelLoadedEvent"));
+        Send(new CurrentModelRequest()); //Request current model on load, this populates a few internal caches.
     }
 
     public void Send(ApiRequest request, string? requestId = null)
