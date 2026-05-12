@@ -76,9 +76,7 @@ jobs:
           yarn install --frozen-lockfile
           yarn build
         working-directory: ./streamdeck-vtubestudio/PropertyInspector
-        env:
-          NODE_OPTIONS: "--openssl-legacy-provider"
-          
+
       - uses: actions/upload-artifact@v4
         with:
           name: property-inspector
