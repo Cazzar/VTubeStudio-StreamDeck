@@ -32,6 +32,12 @@ namespace Cazzar.StreamDeck.VTubeStudio
             modelCache.ModelCacheUpdated += Update;
             VTubeStudioWebsocketClient.OnModelHotkeys += OnModelHotkeys;
             VTubeStudioWebsocketClient.OnModelConfigChangedEvent += OnModelConfigChangedEvent;
+            VTubeStudioWebsocketClient.OnModelLoadedEvent += (_, args) =>
+            {
+                if (!args.Response.ModelLoaded) return;
+                _logger.LogDebug("ModelLoadedEvent received, requesting hotkeys for {ModelId}", args.Response.ModelId);
+                _vts.Send(new ModelHotkeyRequest(args.Response.ModelId));
+            };
         }
         private void OnModelConfigChangedEvent(object sender, ApiEventArgs<ModelConfigChangedEvent> e)
         {

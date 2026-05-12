@@ -26,6 +26,12 @@ namespace Cazzar.StreamDeck.VTubeStudio
             VTubeStudioWebsocketClient.OnHotkeyTriggeredEvent += OnHotkeyTriggered;
             VTubeStudioWebsocketClient.OnExpressionState += OnExpressionState;
             VTubeStudioWebsocketClient.OnModelLoad += OnModelLoad;
+            VTubeStudioWebsocketClient.OnModelLoadedEvent += (_, args) =>
+            {
+                if (!args.Response.ModelLoaded) return;
+                _logger.LogDebug("ModelLoadedEvent received, requesting expression states");
+                _vts.Send(new ExpressionStateRequest());
+            };
         }
 
         private void OnAuthenticated(object sender, ApiEventArgs<AuthenticationResponse> e)

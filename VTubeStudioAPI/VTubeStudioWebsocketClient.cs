@@ -43,6 +43,7 @@ public class VTubeStudioWebsocketClient
         Send(new EventSubscriptionRequest<object>("ModelMovedEvent"));
         Send(new EventSubscriptionRequest<object>("ModelConfigChangedEvent"));
         Send(new EventSubscriptionRequest<object>("HotkeyTriggeredEvent"));
+        Send(new EventSubscriptionRequest<object>("ModelLoadedEvent"));
     }
 
     public void Send(ApiRequest request, string? requestId = null)
@@ -195,6 +196,9 @@ public class VTubeStudioWebsocketClient
             case ResponseType.HotkeyTriggeredEvent:
                 OnHotkeyTriggeredEvent?.Invoke(this, new(response.Data!.ToObject<HotkeyTriggeredEvent>()!));
                 break;
+            case ResponseType.ModelLoadedEvent:
+                OnModelLoadedEvent?.Invoke(this, new(response.Data!.ToObject<ModelLoadedEvent>()!));
+                break;
             case ResponseType.ExpressionStateResponse:
                 OnExpressionState?.Invoke(this, new(response.Data!.ToObject<ExpressionStateResponse>()!) { RequestId = response.RequestId });
                 break;
@@ -240,6 +244,7 @@ public class VTubeStudioWebsocketClient
     public static event EventHandler<ApiEventArgs<ModelMoveEvent>>? OnModelMove;
     public static event EventHandler<ApiEventArgs<ModelConfigChangedEvent>>? OnModelConfigChangedEvent;
     public static event EventHandler<ApiEventArgs<HotkeyTriggeredEvent>>? OnHotkeyTriggeredEvent;
+    public static event EventHandler<ApiEventArgs<ModelLoadedEvent>>? OnModelLoadedEvent;
     public static event EventHandler<ApiEventArgs<ExpressionStateResponse>>? OnExpressionState;
 #endregion
 }

@@ -54,6 +54,7 @@ public enum ResponseType
     ModelMovedEvent,
     ModelConfigChangedEvent,
     HotkeyTriggeredEvent,
+    ModelLoadedEvent,
     ExpressionStateResponse,
     ExpressionActivationResponse,
 }

@@ -29,6 +29,8 @@ namespace Cazzar.StreamDeck.VTubeStudio
             };
             
             VTubeStudioWebsocketClient.OnModelLoad += (_, args) => CurrentModelId = args.Response.Id;
+            VTubeStudioWebsocketClient.OnModelLoadedEvent += (_, args) =>
+                CurrentModelId = args.Response.ModelLoaded ? args.Response.ModelId : string.Empty;
             VTubeStudioWebsocketClient.OnAvailableModels += OnAvailableModels;
             
             // _updateTimer.Elapsed += (_, _) => Update(); 
