@@ -15,7 +15,7 @@
     "@vitejs/plugin-vue": "^5.0.0",
     "eslint": "^8.0.0",
     "eslint-plugin-vue": "^9.0.0",
-    "vite": "^5.0.0"
+    "vite": "^6.4.3"
   },
   "eslintConfig": {
     "root": true,
