@@ -18,7 +18,7 @@ builder.Services.AddCreatorCentralHost(builder.Configuration)
     .AddVTubeStudio();
 
 builder.Logging.ClearProviders()
-    .SetMinimumLevel(LogLevel.Information)
+    .SetMinimumLevel(LogLevel.Trace)
     .AddNLog();
 
 await builder.Build().RunAsync();
