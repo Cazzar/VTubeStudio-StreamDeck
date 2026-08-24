@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\VTubeStudio.Api\VTubeStudio.Api.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Core\Cazzar.Deck.Core.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Generators\Cazzar.Deck.Generators.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+</Project>

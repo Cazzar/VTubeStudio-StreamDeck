@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\Cazzar.Deck.Core\Cazzar.Deck.Core.csproj" />
+  </ItemGroup>
+</Project>

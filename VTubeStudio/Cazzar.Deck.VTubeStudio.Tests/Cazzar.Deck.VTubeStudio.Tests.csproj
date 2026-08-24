@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DeckPackageUuid</_Parameter1>
+      <_Parameter2>$(VtsPackageUuid)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cazzar.Deck.VTubeStudio\Cazzar.Deck.VTubeStudio.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Hosts.Loopback\Cazzar.Deck.Hosts.Loopback.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Hosts.StreamDeck\Cazzar.Deck.Hosts.StreamDeck.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Hosts.CreatorCentral\Cazzar.Deck.Hosts.CreatorCentral.csproj" />
+  </ItemGroup>
+
+</Project>

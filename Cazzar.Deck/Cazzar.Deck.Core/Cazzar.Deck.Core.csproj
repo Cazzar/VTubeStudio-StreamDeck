@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Shared\DeckActionNaming.cs" Link="Shared\DeckActionNaming.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Cazzar.Deck.Abstractions\Cazzar.Deck.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

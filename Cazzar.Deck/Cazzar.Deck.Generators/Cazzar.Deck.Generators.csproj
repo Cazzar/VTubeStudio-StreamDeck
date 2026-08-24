@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsRoslynComponent>true</IsRoslynComponent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\DeckActionNaming.cs" Link="Shared\DeckActionNaming.cs" />
+    <Compile Include="..\Shared\DeckHostFlags.cs" Link="Shared\DeckHostFlags.cs" />
+    <Compile Include="..\Shared\CompilerFeatureRequiredAttribute.cs" Link="Shared\CompilerFeatureRequiredAttribute.cs" />
+    <Compile Include="..\Shared\IsExternalInit.cs" Link="Shared\IsExternalInit.cs" />
+    <Compile Include="..\Shared\RequiredMemberAttribute.cs" Link="Shared\RequiredMemberAttribute.cs" />
+    <Compile Include="..\Shared\SetsRequiredMembersAttribute.cs" Link="Shared\SetsRequiredMembersAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>

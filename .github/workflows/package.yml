@@ -1,0 +1,230 @@
+name: Package
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: false
+        description: Commit, branch or tag to build. Defaults to the triggering ref.
+      version:
+        type: string
+        required: false
+        description: Version to stamp. The first numeric token is used; otherwise one is derived from the last tag.
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
+
+jobs:
+  version:
+    name: Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - id: resolve
+        env:
+          INPUT: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INPUT" ]; then
+            version=$(printf '%s' "$INPUT" | grep -oE '[0-9]+(\.[0-9]+)*' | head -1 || true)
+            if [ -z "$version" ]; then
+              echo "::error title=Version::No version number found in '$INPUT'."
+              exit 1
+            fi
+          else
+            last=$(git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)
+            IFS=. read -r major minor patch <<< "${last#v}"
+            version="${major:-0}.${minor:-0}.$(( ${patch:-0} + 1 )).${{ github.run_number }}"
+          fi
+          while [ "$(echo "$version" | tr -cd . | wc -c)" -lt 3 ]; do version="$version.0"; done
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Version::$version"
+
+  manifest:
+    name: Manifest (${{ matrix.host }})
+    runs-on: ubuntu-latest
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: StreamDeck
+            folder: dev.cazzar.vtubestudio.sdPlugin
+          - host: CreatorCentral
+            folder: dev.cazzar.vtubestudio
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Generate
+        run: |
+          set -euo pipefail
+          dotnet build "VTubeStudio/Cazzar.Deck.VTubeStudio.${{ matrix.host }}/Cazzar.Deck.VTubeStudio.${{ matrix.host }}.csproj" \
+            -c Release -p:Version="${{ needs.version.outputs.version }}" \
+            -p:BuildPropertyInspector=false
+
+      - name: Stage
+        run: |
+          set -euo pipefail
+          launcher="VTubeStudio/Cazzar.Deck.VTubeStudio.${{ matrix.host }}"
+          mkdir -p stage/package
+          cp -r "dist/${{ matrix.folder }}/." stage/package/
+          cp "$launcher"/PropertyInspector/src/routes.generated.js stage/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: manifest-${{ matrix.host }}
+          path: stage/
+          if-no-files-found: error
+
+  property-view:
+    name: Property view (${{ matrix.host }})
+    runs-on: ubuntu-latest
+    needs: manifest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: StreamDeck
+            folder: dev.cazzar.vtubestudio.sdPlugin
+          - host: CreatorCentral
+            folder: dev.cazzar.vtubestudio
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: jdx/mise-action@v4
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: manifest-${{ matrix.host }}
+          path: stage
+
+      - name: Build
+        run: |
+          set -euo pipefail
+          launcher="VTubeStudio/Cazzar.Deck.VTubeStudio.${{ matrix.host }}"
+          cp stage/routes.generated.js "$launcher/PropertyInspector/src/"
+          (cd "$launcher/PropertyInspector" && mise run build)
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: property-view-${{ matrix.host }}
+          path: dist/${{ matrix.folder }}/PropertyInspector/
+          if-no-files-found: error
+
+  binary:
+    name: Binary (${{ matrix.host }}, ${{ matrix.rid }})
+    runs-on: ubuntu-latest
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [StreamDeck, CreatorCentral]
+        rid: [win-x64, osx-x64]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish
+        run: |
+          dotnet publish "VTubeStudio/Cazzar.Deck.VTubeStudio.${{ matrix.host }}/Cazzar.Deck.VTubeStudio.${{ matrix.host }}.csproj" \
+            -c Release -r "${{ matrix.rid }}" --self-contained true \
+            -p:Version="${{ needs.version.outputs.version }}" -p:BuildPropertyInspector=false \
+            -o publish
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: binary-${{ matrix.host }}-${{ matrix.rid }}
+          path: publish/
+          if-no-files-found: error
+
+  bundle:
+    name: Bundle (${{ matrix.host }})
+    runs-on: ubuntu-latest
+    needs: [version, property-view, binary]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: StreamDeck
+            folder: dev.cazzar.vtubestudio.sdPlugin
+          - host: CreatorCentral
+            folder: dev.cazzar.vtubestudio
+    steps:
+      - uses: actions/setup-node@v7
+        if: matrix.host == 'StreamDeck'
+        with:
+          node-version: '24'
+
+      - name: Install Stream Deck CLI
+        if: matrix.host == 'StreamDeck'
+        run: npm install -g @elgato/cli@latest
+
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: '*-${{ matrix.host }}*'
+          path: in
+
+      - name: Lay out package
+        env:
+          HOST: ${{ matrix.host }}
+          FOLDER: ${{ matrix.folder }}
+        run: |
+          set -euo pipefail
+          dir="dist/$FOLDER"
+          exe="vts-$(echo "$HOST" | tr '[:upper:]' '[:lower:]')"
+
+          mkdir -p "$dir/win" "$dir/osx" "$dir/PropertyInspector"
+          cp -r "in/manifest-$HOST/package/." "$dir/"
+          cp -r "in/property-view-$HOST/." "$dir/PropertyInspector/"
+          cp -r "in/binary-$HOST-win-x64/." "$dir/win/"
+          cp -r "in/binary-$HOST-osx-x64/." "$dir/osx/"
+          chmod +x "$dir/osx/$exe"
+
+      - name: Validate
+        if: matrix.host == 'StreamDeck'
+        run: |
+          set -uo pipefail
+          streamdeck validate "dist/${{ matrix.folder }}" ||
+            echo "::warning title=Stream Deck validation::streamdeck validate reported problems; see the log."
+
+      - name: Pack Stream Deck plugin
+        if: matrix.host == 'StreamDeck'
+        run: |
+          set -euo pipefail
+          streamdeck pack dist/dev.cazzar.vtubestudio.sdPlugin -o dist --version "${{ needs.version.outputs.version }}" --force
+          mv dist/dev.cazzar.vtubestudio.streamDeckPlugin \
+             "dist/vtubestudio-streamdeck-${{ needs.version.outputs.version }}.streamDeckPlugin"
+
+      - name: Pack Creator Central package
+        if: matrix.host == 'CreatorCentral'
+        run: |
+          set -euo pipefail
+          (cd dist && zip -qr "vtubestudio-creatorcentral-${{ needs.version.outputs.version }}.zip" "${{ matrix.folder }}")
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vtubestudio-${{ matrix.host }}
+          path: dist/
+          if-no-files-found: error

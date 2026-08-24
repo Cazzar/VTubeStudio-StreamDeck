@@ -1,0 +1,82 @@
+<Project>
+
+  <!-- TaskHostFactory runs the task in a short-lived process, so MSBuild's persistent nodes never
+       hold this assembly open and it stays rebuildable. -->
+  <UsingTask TaskName="Cazzar.Deck.Build.GenerateDeckManifest"
+             AssemblyFile="$(DeckBuildTaskAssembly)"
+             TaskFactory="TaskHostFactory" />
+
+  <PropertyGroup Condition="'$(DeckSlimPublish)' != 'false' And '$(RuntimeIdentifier)' != ''">
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+    <PublishSingleFile>true</PublishSingleFile>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <AllowedReferenceRelatedFileExtensions>none</AllowedReferenceRelatedFileExtensions>
+    <EventSourceSupport>false</EventSourceSupport>
+    <MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+    <UseSystemResourceKeys>true</UseSystemResourceKeys>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(DeckPackageUuid)' != ''">
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DeckPackageUuid</_Parameter1>
+      <_Parameter2>$(DeckPackageUuid)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <DeckManifestFileName Condition="'$(DeckHost)' == 'StreamDeck'">manifest.json</DeckManifestFileName>
+    <DeckManifestFileName Condition="'$(DeckHost)' == 'CreatorCentral'">PackageConfig.json</DeckManifestFileName>
+    <DeckPackageDir Condition="'$(DeckPackageDir)' == ''">$(MSBuildProjectDirectory)\package\</DeckPackageDir>
+    <DeckPropertyViewEntry Condition="'$(DeckPropertyViewEntry)' == ''">PropertyInspector/index.html</DeckPropertyViewEntry>
+  </PropertyGroup>
+
+  <Target Name="GenerateDeckManifest"
+          AfterTargets="Build"
+          Condition="'$(DeckHost)' != '' And '$(RuntimeIdentifier)' == ''"
+          Inputs="$(TargetPath);@(DeckManifestFragment)"
+          Outputs="$(DeckPackageDir)$(DeckManifestFileName)">
+
+    <ItemGroup>
+      <DeckManifestFragment Include="$(DeckActionFragmentGlob)" Condition="'$(DeckActionFragmentGlob)' != ''" />
+    </ItemGroup>
+
+    <GenerateDeckManifest Assembly="$(DeckActionAssembly)"
+                          References="@(ReferencePathWithRefAssemblies)"
+                          Fragments="@(DeckManifestFragment)"
+                          Host="$(DeckHost)"
+                          Output="$(DeckPackageDir)$(DeckManifestFileName)"
+                          PackageDirectory="$(DeckPackageDir)"
+                          PackageUuid="$(DeckPackageUuid)"
+                          PackageName="$(DeckPackageName)"
+                          PackageAuthor="$(Authors)"
+                          PackageDescription="$(Description)"
+                          PackageVersion="$(Version)"
+                          PackageIcon="$(DeckPackageIcon)"
+                          PackageCategory="$(DeckPackageCategory)"
+                          PackageUrl="$(PackageProjectUrl)"
+                          Executable="$(AssemblyName)"
+                          HostMinimumVersion="$(DeckHostMinimumVersion)"
+                          WindowsMinimumVersion="$(DeckWindowsMinimumVersion)"
+                          MacMinimumVersion="$(DeckMacMinimumVersion)"
+                          RoutesOutput="$(DeckRoutesOutput)"
+                          PropertyViewEntry="$(DeckPropertyViewEntry)"
+                          StrictAssets="$(DeckStrictAssets)"
+                          PropertyViewPending="$(DeckPropertyViewPending)"
+                          Verify="$(DeckVerifyManifest)" />
+  </Target>
+
+  <Target Name="CopyDeckPackageAssets"
+          AfterTargets="Build"
+          BeforeTargets="GenerateDeckManifest"
+          Condition="'@(DeckPackageAsset)' != '' And '$(RuntimeIdentifier)' == ''"
+          Inputs="@(DeckPackageAsset)"
+          Outputs="@(DeckPackageAsset->'$(DeckPackageDir)%(RecursiveDir)%(Filename)%(Extension)')">
+
+    <Copy SourceFiles="@(DeckPackageAsset)"
+          DestinationFiles="@(DeckPackageAsset->'$(DeckPackageDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>
