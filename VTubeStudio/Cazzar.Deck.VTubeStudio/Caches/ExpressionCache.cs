@@ -21,6 +21,7 @@ public sealed class ExpressionCache
             [
                 .. e.Response.Expressions.Select(e => new ExpressionStatus
                 {
+                    Name = e.Name,
                     FileName = e.File,
                     IsActive = e.Active
                 }),
@@ -38,6 +39,7 @@ public sealed class ExpressionCache
 
             var expressionStatus = new ExpressionStatus
             {
+                Name = e.Response.ExpressionName,
                 FileName = e.Response.ExpressionFile,
                 IsActive = e.Response.Active
             };

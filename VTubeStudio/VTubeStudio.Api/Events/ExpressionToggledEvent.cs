@@ -10,5 +10,6 @@ public sealed record ExpressionToggledEvent
     [JsonPropertyName("itemInstanceID")] public string ItemInstanceId { get; init; }  = string.Empty;
     [JsonPropertyName("justLoaded")] public bool JustLoaded { get; init; }  = false;
     [JsonPropertyName("expressionFile")] public string ExpressionFile { get; init; }  = string.Empty;
+    [JsonPropertyName("expressionName")] public string ExpressionName { get; init; }  = string.Empty;
     [JsonPropertyName("active")] public bool Active { get; init; } = false;
 }
