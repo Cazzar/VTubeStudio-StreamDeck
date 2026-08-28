@@ -161,7 +161,7 @@ public sealed class VTubeStudioClient(
                 if (result.MessageType == WebSocketMessageType.Close) break;
                 if (result.MessageType != WebSocketMessageType.Text) continue;
 
-                var chars = new char[result.Count];
+                var chars = new char[Encoding.UTF8.GetMaxCharCount(result.Count)];
                 text.Append(chars, 0, decoder.GetChars(buffer, 0, result.Count, chars, 0, result.EndOfMessage));
 
                 if (!result.EndOfMessage) continue;
