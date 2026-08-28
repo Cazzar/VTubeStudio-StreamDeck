@@ -7,7 +7,7 @@ namespace Cazzar.Deck.VTubeStudio.Caches;
 public sealed class ExpressionCache
 {
     private readonly IVTubeStudio _vts;
-    private readonly ConcurrentDictionary<string, List<ExpressionStatus>> _expressions = new();
+    private readonly ConcurrentDictionary<string, IReadOnlyList<ExpressionStatus>> _expressions = new();
 
     public ExpressionCache(IVTubeStudio vts)
     {
@@ -34,32 +34,28 @@ public sealed class ExpressionCache
         {
             if (string.IsNullOrEmpty(e.Response.ModelId)) return;
 
-            if (!_expressions.TryGetValue(e.Response.ModelId, out var modelExpressions)) 
-                _expressions[e.Response.ModelId] = modelExpressions = new ();
-
-            var expressionStatus = new ExpressionStatus
+            var toggled = new ExpressionStatus
             {
                 Name = e.Response.ExpressionName,
                 FileName = e.Response.ExpressionFile,
                 IsActive = e.Response.Active
             };
-            
-            var existingExpression = modelExpressions.FirstOrDefault(x => x.FileName == expressionStatus.File);
-            if (existingExpression != null)
-                existingExpression.IsActive = expressionStatus.IsActive;
-            else
-                modelExpressions.Add(expressionStatus);
-            
+
+            var current = For(e.Response.ModelId);
+            _expressions[e.Response.ModelId] = current.Any(x => x.File == toggled.File)
+                ? [.. current.Select(x => x.File == toggled.File ? x with { IsActive = toggled.IsActive } : x)]
+                : [.. current, toggled];
+
             Updated?.Invoke(this, new(Expressions));
         };
     }
 
-    private IReadOnlyDictionary<string, List<ExpressionStatus>> Expressions => _expressions.AsReadOnly();
+    private IReadOnlyDictionary<string, IReadOnlyList<ExpressionStatus>> Expressions => _expressions;
 
     public event EventHandler<ExpressionCacheUpdatedEventArgs>? Updated;
 
     public IReadOnlyList<ExpressionStatus> For(string? modelId) =>
-        modelId is not null && _expressions.TryGetValue(modelId, out var expressions) ? expressions.AsReadOnly() : [];
+        modelId is not null && _expressions.TryGetValue(modelId, out var expressions) ? expressions : [];
 
     public void Refresh() => _vts.Send(new ExpressionStateRequest());
 }

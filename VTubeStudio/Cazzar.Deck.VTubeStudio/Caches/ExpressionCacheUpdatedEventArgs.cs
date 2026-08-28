@@ -1,6 +1,6 @@
 namespace Cazzar.Deck.VTubeStudio.Caches;
 
-public sealed class ExpressionCacheUpdatedEventArgs(IReadOnlyDictionary<string, List<ExpressionStatus>> expressions) : EventArgs
+public sealed class ExpressionCacheUpdatedEventArgs(IReadOnlyDictionary<string, IReadOnlyList<ExpressionStatus>> expressions) : EventArgs
 {
-    public IReadOnlyDictionary<string, List<ExpressionStatus>> Expressions { get; } = expressions;
+    public IReadOnlyDictionary<string, IReadOnlyList<ExpressionStatus>> Expressions { get; } = expressions;
 }
