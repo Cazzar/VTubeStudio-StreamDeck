@@ -4,6 +4,7 @@ using Cazzar.Deck.Abstractions.Protocol;
 using Cazzar.Deck.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace Cazzar.Deck.Core.Actions;
 
@@ -33,7 +34,17 @@ public abstract class DeckAction<TSettings> : IContextBound, ISettingsHandler, I
     public virtual void GotSettings(IPayload settings)
     {
         var previous = Settings;
-        Settings = settings.As<TSettings>() ?? new TSettings();
+
+        try
+        {
+            Settings = settings.As<TSettings>() ?? new ();
+        }
+        catch (JsonException e)
+        {
+            Logger.LogWarning(e, "Could not read stored settings; falling back to defaults");
+            Settings = new ();
+        }
+
         OnSettingsChanged(previous, Settings);
     }
 

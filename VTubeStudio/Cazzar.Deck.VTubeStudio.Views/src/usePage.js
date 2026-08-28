@@ -29,9 +29,11 @@ export function usePage(defaults) {
     Object.assign(data, payload ?? {})
   })
 
+  const filled = () => Object.fromEntries(Object.entries(settings).filter(([, value]) => value !== ''))
+
   // Do not echo back the settings the host just sent us.
   watch(settings, () => {
-    if (!applying) deck.saveSettings({ ...settings })
+    if (!applying) deck.saveSettings(filled())
   }, { deep: true })
 
   return {
