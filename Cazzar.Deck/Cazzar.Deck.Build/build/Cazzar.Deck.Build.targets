@@ -32,15 +32,15 @@
     <DeckPropertyViewEntry Condition="'$(DeckPropertyViewEntry)' == ''">PropertyInspector/index.html</DeckPropertyViewEntry>
   </PropertyGroup>
 
+  <ItemGroup>
+    <DeckManifestFragment Include="$(DeckActionFragmentGlob)" Condition="'$(DeckActionFragmentGlob)' != ''" />
+  </ItemGroup>
+
   <Target Name="GenerateDeckManifest"
           AfterTargets="Build"
           Condition="'$(DeckHost)' != '' And '$(RuntimeIdentifier)' == ''"
           Inputs="$(TargetPath);@(DeckManifestFragment)"
           Outputs="$(DeckPackageDir)$(DeckManifestFileName)">
-
-    <ItemGroup>
-      <DeckManifestFragment Include="$(DeckActionFragmentGlob)" Condition="'$(DeckActionFragmentGlob)' != ''" />
-    </ItemGroup>
 
     <GenerateDeckManifest Assembly="$(DeckActionAssembly)"
                           References="@(ReferencePathWithRefAssemblies)"
