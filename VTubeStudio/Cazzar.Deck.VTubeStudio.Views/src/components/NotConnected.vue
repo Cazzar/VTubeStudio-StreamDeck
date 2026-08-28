@@ -9,13 +9,13 @@
     <div class="sdpi-item">
       <div class="sdpi-item-label">VTS host</div>
       <span class="sdpi-item-value">
-        <input type="text" v-model="host">
+        <input type="text" v-model="host" @blur="normalise">
       </span>
     </div>
     <div class="sdpi-item">
       <div class="sdpi-item-label">VTS port</div>
       <span class="sdpi-item-value">
-        <input type="number" min="1" max="65535" step="1" v-model="port">
+        <input type="number" min="1" max="65535" step="1" v-model="port" @blur="normalise">
       </span>
     </div>
     <div class="sdpi-item">
@@ -29,11 +29,13 @@ import { inject, onMounted, ref } from 'vue'
 
 const deck = inject('deck')
 
-const ready = ref(false)
-const host = ref('127.0.0.1')
-const port = ref(8001)
-
 const HELP_URL = 'https://github.com/Cazzar/VTubeStudio-StreamDeck/wiki/Installation#configuring-vtubestudio'
+const HOST_DEFAULT = '127.0.0.1'
+const PORT_DEFAULT = 8001
+
+const ready = ref(false)
+const host = ref(HOST_DEFAULT)
+const port = ref(PORT_DEFAULT)
 
 deck.on('globalSettings', settings => {
   host.value = settings?.host ?? host.value
@@ -56,8 +58,16 @@ function openHelp() {
   deck.openUrl(HELP_URL)
 }
 
+function normalise() {
+  const parsed = Math.trunc(Number(port.value))
+
+  host.value = String(host.value).trim() || HOST_DEFAULT
+  port.value = parsed >= 1 && parsed <= 65535 ? parsed : PORT_DEFAULT
+}
+
 function connect() {
-  deck.send('set-vtsinfo', { host: host.value, port: Number(port.value) })
+  normalise()
+  deck.send('set-vtsinfo', { host: host.value, port: port.value })
 }
 </script>
 
