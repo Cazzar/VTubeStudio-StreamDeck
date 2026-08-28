@@ -8,11 +8,15 @@ public abstract class VTubeStudioAction<TSettings, TState>(DeckActionContext con
     where TSettings : new()
     where TState : struct, Enum
 {
-    public TState CurrentState { get; private set; }
-
-    protected void SetState(TState state)
+    protected TState CurrentState
     {
-        CurrentState = state;
-        _ = SetStateAsync(Convert.ToUInt32(state));
+        get;
+        set
+        {
+            if (EqualityComparer<TState>.Default.Equals(field, value)) return;
+
+            field = value;
+            _ = SetStateAsync(Convert.ToUInt32(value));
+        }
     }
 }

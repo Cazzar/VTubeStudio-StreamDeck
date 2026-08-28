@@ -39,7 +39,7 @@ public sealed class TriggerHotkeyAction(
 
     protected override void OnSettingsChanged(Options previous, Options current)
     {
-        if (previous.ShowName && !current.ShowName) _ = SetTitleAsync(null);
+        if (previous.ShowName && !current.ShowName) Title = null;
 
         UpdateTitle();
     }
@@ -72,6 +72,6 @@ public sealed class TriggerHotkeyAction(
         if (!Settings.ShowName) return;
 
         if (hotkeys.For(Settings.ModelId).FirstOrDefault(h => h.Id == Settings.HotkeyId)?.ButtonTitle() is { Length: > 0 } title)
-            _ = SetTitleAsync(title);
+            Title = title;
     }
 }

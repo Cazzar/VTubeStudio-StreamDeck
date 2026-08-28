@@ -40,7 +40,7 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
         if (string.IsNullOrEmpty(Settings.ExpressionFile)) return;
 
         var next = CurrentState == State.Active ? State.Inactive : State.Active;
-        SetState(next);
+        CurrentState = next;
 
         Vts.Send(new ExpressionActivationRequest(Settings.ExpressionFile, next == State.Active));
         _expressions.Refresh();
@@ -55,7 +55,7 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
 
     protected override void OnSettingsChanged(ExpressionSettings previous, ExpressionSettings current)
     {
-        if (previous.ShowName && !current.ShowName) _ = SetTitleAsync(null);
+        if (previous.ShowName && !current.ShowName) Title = null;
 
         if (previous.ModelId != current.ModelId || previous.ExpressionFile != current.ExpressionFile)
             _expressionName = string.Empty;
@@ -89,10 +89,9 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
 
         _expressionName = expression.Name;
 
-        var state = expression.IsActive ? State.Active : State.Inactive;
-        if (state != CurrentState) SetState(state);
+        CurrentState = expression.IsActive ? State.Active : State.Inactive;
 
-        if (Settings.ShowName && _expressionName.Length > 0) _ = SetTitleAsync(_expressionName);
+        if (Settings.ShowName && _expressionName.Length > 0) Title = _expressionName;
     }
 
     public void Dispose() => _expressions.Updated -= OnExpressionsUpdated;

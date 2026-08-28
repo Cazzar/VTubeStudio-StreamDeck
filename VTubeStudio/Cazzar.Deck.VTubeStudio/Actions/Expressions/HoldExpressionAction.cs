@@ -9,12 +9,22 @@ namespace Cazzar.Deck.VTubeStudio.Actions.Expressions;
 
 [DeckAction(Name = "Hold Expression", Tooltip = "VTubeStudio [Hold Expression]",
     Icon = "vts_logo_transparent", PropertyView = "HoldExpression")]
-public sealed class HoldExpressionAction(
-    DeckActionContext context,
-    IVTubeStudio vts,
-    ExpressionCache expressions,
-    ModelCache models) : VTubeStudioAction<ExpressionSettings>(context, vts)
+public sealed class HoldExpressionAction : VTubeStudioAction<ExpressionSettings>, IDisposable
 {
+    private readonly ExpressionCache _expressions;
+    private readonly ModelCache _models;
+
+    public HoldExpressionAction(
+        DeckActionContext context,
+        IVTubeStudio vts,
+        ExpressionCache expressions,
+        ModelCache models) : base(context, vts)
+    {
+        _expressions = expressions;
+        _models = models;
+        _expressions.Updated += OnExpressionsUpdated;
+    }
+
     protected override void Pressed() => Activate(true);
 
     protected override void Released() => Activate(false);
@@ -28,36 +38,42 @@ public sealed class HoldExpressionAction(
 
     protected override JsonNode ClientData() => new JsonObject
     {
-        ["models"] = Choices(models.Models, m => m.Id, m => m.Name),
-        ["expressions"] = Choices(expressions.For(Settings.ModelId), e => e.File, e => e.Name),
+        ["models"] = Choices(_models.Models, m => m.Id, m => m.Name),
+        ["expressions"] = Choices(_expressions.For(Settings.ModelId), e => e.File, e => e.Name),
         ["connected"] = Vts.IsAuthenticated,
     };
 
-    protected override void OnSettingsChanged(ExpressionSettings previous, ExpressionSettings current)
-    {
-        if (!current.ShowName)
-        {
-            _ = SetTitleAsync(null);
-            return;
-        }
-
-        if (expressions.For(current.ModelId).FirstOrDefault(e => e.File == current.ExpressionFile) is { } expression)
-            _ = SetTitleAsync(expression.Name);
-    }
+    protected override void OnSettingsChanged(ExpressionSettings previous, ExpressionSettings current) => UpdateTitle();
 
     public override void Refresh(IPayload body)
     {
-        expressions.Refresh();
+        _expressions.Refresh();
         base.Refresh(body);
     }
 
     [PropertyViewCommand("select-current-model")]
     public void SelectCurrentModel(IPayload body)
     {
-        if (models.CurrentModelId is not { } id) return;
+        if (_models.CurrentModelId is not { } id) return;
 
         Settings.ModelId = id;
         _ = SaveSettingsAsync();
         _ = UpdateClientAsync();
     }
+
+    private void OnExpressionsUpdated(object? sender, ExpressionCacheUpdatedEventArgs e) => UpdateTitle();
+
+    private void UpdateTitle()
+    {
+        if (!Settings.ShowName)
+        {
+            Title = null;
+            return;
+        }
+
+        if (_expressions.For(Settings.ModelId).FirstOrDefault(e => e.File == Settings.ExpressionFile) is { } expression)
+            Title = expression.Name;
+    }
+
+    public void Dispose() => _expressions.Updated -= OnExpressionsUpdated;
 }

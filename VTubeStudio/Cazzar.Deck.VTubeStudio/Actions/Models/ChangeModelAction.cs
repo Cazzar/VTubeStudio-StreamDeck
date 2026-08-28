@@ -36,7 +36,7 @@ public sealed class ChangeModelAction(
 
     protected override void OnSettingsChanged(Options previous, Options current)
     {
-        if (previous.ShowName && !current.ShowName) _ = SetTitleAsync(null);
+        if (previous.ShowName && !current.ShowName) Title = null;
 
         UpdateTitle();
     }
@@ -58,6 +58,6 @@ public sealed class ChangeModelAction(
         if (!Settings.ShowName) return;
 
         if (models.Models.FirstOrDefault(m => m.Id == Settings.ModelId)?.Name is { Length: > 0 } name)
-            _ = SetTitleAsync(name);
+            Title = name;
     }
 }

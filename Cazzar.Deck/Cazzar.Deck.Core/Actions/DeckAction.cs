@@ -48,7 +48,22 @@ public abstract class DeckAction<TSettings> : IContextBound, ISettingsHandler, I
 
     protected ValueTask RequestSettingsAsync() => Context.Settings.RequestAsync(Ref);
 
-    protected ValueTask SetTitleAsync(string? title, uint state = 0) => Context.Widget.SetTitleAsync(Ref, title, state);
+    private bool _titleWritten;
+
+    /// <summary>Pushes only on change. <c>null</c> clears to the host-configured title.</summary>
+    protected string? Title
+    {
+        get;
+        set
+        {
+            if (_titleWritten && field == value) return;
+
+            (field, _titleWritten) = (value, true);
+            _ = SetTitleAsync(value);
+        }
+    }
+
+    private ValueTask SetTitleAsync(string? title, uint state = 0) => Context.Widget.SetTitleAsync(Ref, title, state);
     protected ValueTask SetImageAsync(string image, uint state = 0) => Context.Widget.SetImageAsync(Ref, image, state);
     protected ValueTask SetStateAsync(uint state) => Context.Widget.SetStateAsync(Ref, state);
     protected ValueTask ShowAlertAsync() =>
