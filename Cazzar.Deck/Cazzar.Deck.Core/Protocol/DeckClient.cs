@@ -14,7 +14,7 @@ public sealed class DeckClient(
     ILogger<DeckClient> logger)
     : IWidgetSurface, ISettingsStore, IPropertyViewChannel, IEncoderSurface
 {
-    public ValueTask SetTitleAsync(ActionRef @ref, string? title, uint state = 0) => Send(new SetTitle(@ref, title, state));
+    public ValueTask SetTitleAsync(ActionRef @ref, string? title, uint? state = null) => Send(new SetTitle(@ref, title, state));
     public ValueTask SetImageAsync(ActionRef @ref, string image, uint state = 0) => Send(new SetImage(@ref, image, state));
     public ValueTask SetStateAsync(ActionRef @ref, uint state) => Send(new SetState(@ref, state));
     public ValueTask ShowAlertAsync(ActionRef @ref) => Send(new ShowAlert(@ref));

@@ -74,7 +74,7 @@ public abstract class DeckAction<TSettings> : IContextBound, ISettingsHandler, I
         }
     }
 
-    private ValueTask SetTitleAsync(string? title, uint state = 0) => Context.Widget.SetTitleAsync(Ref, title, state);
+    private ValueTask SetTitleAsync(string? title, uint? state = null) => Context.Widget.SetTitleAsync(Ref, title, state);
     protected ValueTask SetImageAsync(string image, uint state = 0) => Context.Widget.SetImageAsync(Ref, image, state);
     protected ValueTask SetStateAsync(uint state) => Context.Widget.SetStateAsync(Ref, state);
     protected ValueTask ShowAlertAsync() =>

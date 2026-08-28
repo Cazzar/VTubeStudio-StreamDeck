@@ -66,6 +66,15 @@ public class StreamDeckCodecTests
     }
 
     [Fact]
+    public void Omits_the_state_so_a_title_applies_to_all_of_them()
+    {
+        var json = JsonNode.Parse(_codec.Encode(new SetTitle(new("ctx-1", "a"), "Zoom"))!)!;
+
+        Assert.Equal("Zoom", (string?)json["payload"]!["title"]);
+        Assert.False(json["payload"]!.AsObject().ContainsKey("state"));
+    }
+
+    [Fact]
     public void Addresses_global_settings_to_the_plugin_uuid()
     {
         var json = JsonNode.Parse(_codec.Encode(new RequestGlobalSettings())!)!;

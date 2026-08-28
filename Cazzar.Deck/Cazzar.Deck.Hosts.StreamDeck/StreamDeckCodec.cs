@@ -48,12 +48,7 @@ public sealed class StreamDeckCodec(IDeckLaunchOptions options) : IDeckCodec
     {
         Register c => DeckFrame.Build(c.Event, o => o["uuid"] = c.Uuid),
 
-        SetTitle c => Frame("setTitle", c.Ref, new JsonObject
-        {
-            ["title"] = c.Title,
-            ["target"] = 0,
-            ["state"] = c.State,
-        }),
+        SetTitle c => Frame("setTitle", c.Ref, Title(c)),
 
         SetImage c => Frame("setImage", c.Ref, new JsonObject
         {
@@ -113,6 +108,15 @@ public sealed class StreamDeckCodec(IDeckLaunchOptions options) : IDeckCodec
 
     private static int TapPos(JsonObject? payload, int index) =>
         payload?["tapPos"] is JsonArray pos && pos.Count > index ? pos[index]!.GetValue<int>() : 0;
+
+    private static JsonObject Title(SetTitle command)
+    {
+        var payload = new JsonObject { ["title"] = command.Title, ["target"] = 0 };
+
+        if (command.State is { } state) payload["state"] = state;
+
+        return payload;
+    }
 
     private static string Frame(string @event, ActionRef @ref, JsonNode? payload) => DeckFrame.Build(@event, message =>
     {

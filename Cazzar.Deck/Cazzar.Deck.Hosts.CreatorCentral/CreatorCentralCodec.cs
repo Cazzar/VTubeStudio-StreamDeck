@@ -49,11 +49,7 @@ public sealed class CreatorCentralCodec(IDeckLaunchOptions options) : IDeckCodec
     {
         Register c => DeckFrame.Build(c.Event, o => o["uuid"] = c.Uuid),
 
-        SetTitle c => Frame("changeTitle", c.Ref, new JsonObject
-        {
-            ["title"] = c.Title,
-            ["state"] = c.State,
-        }),
+        SetTitle c => Frame("changeTitle", c.Ref, Title(c)),
 
         SetImage c => Frame("changeIcon", c.Ref, new JsonObject
         {
@@ -92,6 +88,15 @@ public sealed class CreatorCentralCodec(IDeckLaunchOptions options) : IDeckCodec
 
     private static uint State(JsonObject? payload) =>
         payload?["state"] is { } node && node.GetValueKind() == JsonValueKind.Number ? node.GetValue<uint>() : 0;
+
+    private static JsonObject Title(SetTitle command)
+    {
+        var payload = new JsonObject { ["title"] = command.Title };
+
+        if (command.State is { } state) payload["state"] = state;
+
+        return payload;
+    }
 
     private static string Frame(string @event, ActionRef @ref, JsonNode? payload, bool includeWidget = false) =>
         DeckFrame.Build(@event, message =>
