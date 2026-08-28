@@ -1,10 +1,9 @@
 using Cazzar.Deck.Abstractions.Actions;
 using Cazzar.Deck.Abstractions.Surfaces;
 using Cazzar.Deck.Abstractions;
+using Cazzar.Deck.VTubeStudio.Actions.Movement;
 using System.Text.Json.Serialization;
-using VTubeStudio.Api.Events;
 using VTubeStudio.Api.Requests;
-using VTubeStudio.Api.Responses;
 using VTubeStudio.Api;
 
 namespace Cazzar.Deck.VTubeStudio.Actions.Encoders;
@@ -13,13 +12,16 @@ namespace Cazzar.Deck.VTubeStudio.Actions.Encoders;
     Icon = "vts_logo_transparent", PropertyView = "ZoomModel")]
 public sealed class ZoomModelAction : EncoderAction<ZoomModelAction.Options>, IDisposable
 {
+    private readonly ModelPositionTracker _tracker;
+
     private double _size;
 
-    public ZoomModelAction(DeckActionContext context, IVTubeStudio vts, IEncoderSurface encoder)
+    public ZoomModelAction(
+        DeckActionContext context, IVTubeStudio vts, IEncoderSurface encoder, ModelPositionTracker tracker)
         : base(context, vts, encoder)
     {
-        vts.ModelMoved += OnModelMoved;
-        vts.CurrentModel += OnCurrentModel;
+        _tracker = tracker;
+        tracker.Updated += OnPositionChanged;
     }
 
     public sealed class Options
@@ -46,23 +48,13 @@ public sealed class ZoomModelAction : EncoderAction<ZoomModelAction.Options>, ID
         _ = UpdateClientAsync();
     }
 
-    private void OnModelMoved(object? sender, VtsEventArgs<ModelMovedEvent> e)
+    private void OnPositionChanged(object? sender, EventArgs e)
     {
-        _size = e.Response.Position.Size;
-        _ = ShowOnDialAsync(AsFraction(_size));
-    }
-
-    private void OnCurrentModel(object? sender, VtsEventArgs<CurrentModelResponse> e)
-    {
-        _size = e.Response.Position.Size;
-        _ = ShowOnDialAsync(e.Response.IsLoaded ? AsFraction(_size) : 0);
+        _size = _tracker.Position.Size;
+        _ = ShowOnDialAsync(_tracker.IsLoaded ? AsFraction(_size) : 0);
     }
 
     private static double AsFraction(double size) => (size + 100d) / 200d;
 
-    public void Dispose()
-    {
-        Vts.ModelMoved -= OnModelMoved;
-        Vts.CurrentModel -= OnCurrentModel;
-    }
+    public void Dispose() => _tracker.Updated -= OnPositionChanged;
 }

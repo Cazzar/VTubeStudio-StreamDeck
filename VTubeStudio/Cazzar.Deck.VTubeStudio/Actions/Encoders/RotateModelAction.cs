@@ -1,10 +1,9 @@
 using Cazzar.Deck.Abstractions.Actions;
 using Cazzar.Deck.Abstractions.Surfaces;
 using Cazzar.Deck.Abstractions;
+using Cazzar.Deck.VTubeStudio.Actions.Movement;
 using System.Text.Json.Serialization;
-using VTubeStudio.Api.Events;
 using VTubeStudio.Api.Requests;
-using VTubeStudio.Api.Responses;
 using VTubeStudio.Api;
 
 namespace Cazzar.Deck.VTubeStudio.Actions.Encoders;
@@ -13,13 +12,16 @@ namespace Cazzar.Deck.VTubeStudio.Actions.Encoders;
     Icon = "vts_logo_transparent", PropertyView = "RotateModel")]
 public sealed class RotateModelAction : EncoderAction<RotateModelAction.Options>, IDisposable
 {
+    private readonly ModelPositionTracker _tracker;
+
     private double _rotation;
 
-    public RotateModelAction(DeckActionContext context, IVTubeStudio vts, IEncoderSurface encoder)
+    public RotateModelAction(
+        DeckActionContext context, IVTubeStudio vts, IEncoderSurface encoder, ModelPositionTracker tracker)
         : base(context, vts, encoder)
     {
-        vts.ModelMoved += OnModelMoved;
-        vts.CurrentModel += OnCurrentModel;
+        _tracker = tracker;
+        tracker.Updated += OnPositionChanged;
     }
 
     public sealed class Options
@@ -47,13 +49,9 @@ public sealed class RotateModelAction : EncoderAction<RotateModelAction.Options>
         _ = UpdateClientAsync();
     }
 
-    private void OnModelMoved(object? sender, VtsEventArgs<ModelMovedEvent> e) => Track(e.Response.Position.Rotation);
-
-    private void OnCurrentModel(object? sender, VtsEventArgs<CurrentModelResponse> e) => Track(e.Response.Position.Rotation);
-
-    private void Track(double rotation)
+    private void OnPositionChanged(object? sender, EventArgs e)
     {
-        _rotation = rotation;
+        _rotation = _tracker.Position.Rotation;
         _ = ShowRotationAsync();
     }
 
@@ -61,9 +59,5 @@ public sealed class RotateModelAction : EncoderAction<RotateModelAction.Options>
         $"{_rotation:N2}\u00b0",
         Math.Abs(_rotation) % 360d / 360d);
 
-    public void Dispose()
-    {
-        Vts.ModelMoved -= OnModelMoved;
-        Vts.CurrentModel -= OnCurrentModel;
-    }
+    public void Dispose() => _tracker.Updated -= OnPositionChanged;
 }
