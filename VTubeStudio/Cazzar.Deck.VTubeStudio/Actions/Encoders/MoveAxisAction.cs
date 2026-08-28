@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using VTubeStudio.Api.Events;
 using VTubeStudio.Api.Models;
 using VTubeStudio.Api.Requests;
+using VTubeStudio.Api.Responses;
 using VTubeStudio.Api;
 
 namespace Cazzar.Deck.VTubeStudio.Actions.Encoders;
@@ -17,6 +18,7 @@ public abstract class MoveAxisAction : EncoderAction<MoveAxisAction.Options>, ID
         : base(context, vts, encoder)
     {
         vts.ModelMoved += OnModelMoved;
+        vts.CurrentModel += OnCurrentModel;
     }
 
     public sealed class Options
@@ -52,7 +54,17 @@ public abstract class MoveAxisAction : EncoderAction<MoveAxisAction.Options>, ID
         _ = ShowOnDialAsync(AsFraction(_position));
     }
 
+    private void OnCurrentModel(object? sender, VtsEventArgs<CurrentModelResponse> e)
+    {
+        _position = Read(e.Response.Position);
+        _ = ShowOnDialAsync(e.Response.IsLoaded ? AsFraction(_position) : 0);
+    }
+
     private static double AsFraction(double position) => Math.Clamp((position + 1d) / 2d, 0, 1);
 
-    public void Dispose() => Vts.ModelMoved -= OnModelMoved;
+    public void Dispose()
+    {
+        Vts.ModelMoved -= OnModelMoved;
+        Vts.CurrentModel -= OnCurrentModel;
+    }
 }
