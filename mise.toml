@@ -23,7 +23,7 @@ description = "Build and pack the Stream Deck plugin into dist/"
 usage = '''
 arg "[version]" default="0.0.1.0"
 flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
-  arg "<uuid>" default="dev.cazzar.streamdeck.vtubestudio"
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
 }
 flag "--debug" help="Build Debug instead of Release"
 flag "--release" help="Build Release (the default)"
@@ -40,7 +40,7 @@ description = "Build the Creator Central package into dist/, ready for their pac
 usage = '''
 arg "[version]" default="0.0.1.0"
 flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
-  arg "<uuid>" default="dev.cazzar.creatorcentral.vtubestudio"
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
 }
 flag "--debug" help="Build Debug instead of Release"
 flag "--release" help="Build Release (the default)"
@@ -55,18 +55,21 @@ run = [
 description = "Build both plugin packages"
 usage = '''
 arg "[version]" default="0.0.1.0"
+flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
+}
 flag "--debug" help="Build Debug instead of Release"
 '''
 run = [
-  { task = "streamdeck", args = ["{{usage.version}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
-  { task = "creatorcentral", args = ["{{usage.version}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
+  { task = "streamdeck", args = ["{{usage.version}}", "--uuid", "{{usage.uuid}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
+  { task = "creatorcentral", args = ["{{usage.version}}", "--uuid", "{{usage.uuid}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
 ]
 
 [tasks.validate]
 description = "Run Elgato's validator over the Stream Deck package"
 usage = '''
 flag "--uuid <uuid>" help="Package uuid to validate" {
-  arg "<uuid>" default="dev.cazzar.streamdeck.vtubestudio"
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
 }
 '''
 run = "streamdeck validate dist/{{usage.uuid}}.sdPlugin"

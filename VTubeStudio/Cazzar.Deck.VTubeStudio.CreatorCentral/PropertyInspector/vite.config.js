@@ -13,7 +13,7 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    outDir: resolve(here, '../../../dist/dev.cazzar.creatorcentral.vtubestudio/PropertyInspector'),
+    outDir: resolve(here, '../../../dist/dev.cazzar.vtubestudio/PropertyInspector'),
     emptyOutDir: true,
   },
 })

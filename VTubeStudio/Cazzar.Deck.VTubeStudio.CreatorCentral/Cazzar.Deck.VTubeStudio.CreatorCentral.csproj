@@ -22,7 +22,7 @@
 
 
   <PropertyGroup>
-    <DeckPackageUuid>dev.cazzar.creatorcentral.vtubestudio</DeckPackageUuid>
+    <DeckPackageUuid>$(VtsPackageUuid)</DeckPackageUuid>
     <DeckPackageDir>$(MSBuildProjectDirectory)\..\..\dist\$(DeckPackageUuid)\</DeckPackageDir>
     <DeckPackageName>VTubeStudio</DeckPackageName>
     <DeckPackageIcon>vts_logo_transparent</DeckPackageIcon>

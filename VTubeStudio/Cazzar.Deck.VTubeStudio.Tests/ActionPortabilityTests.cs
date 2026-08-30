@@ -11,22 +11,22 @@ public class ActionPortabilityTests
 {
     private static readonly string[] EncoderActions =
     [
-        "dev.cazzar.streamdeck.vtubestudio.zoommodel",
-        "dev.cazzar.streamdeck.vtubestudio.movemodel.x",
-        "dev.cazzar.streamdeck.vtubestudio.movemodel.y",
-        "dev.cazzar.streamdeck.vtubestudio.rotatemodel",
+        "dev.cazzar.vtubestudio.zoommodel",
+        "dev.cazzar.vtubestudio.movemodel.x",
+        "dev.cazzar.vtubestudio.movemodel.y",
+        "dev.cazzar.vtubestudio.rotatemodel",
     ];
 
     private static readonly string[] PortableActions =
     [
-        "dev.cazzar.streamdeck.vtubestudio.triggerhotkey",
-        "dev.cazzar.streamdeck.vtubestudio.changemodel",
-        "dev.cazzar.streamdeck.vtubestudio.reloadmodel",
-        "dev.cazzar.streamdeck.vtubestudio.movemodel",
-        "dev.cazzar.streamdeck.vtubestudio.scalemodel",
-        "dev.cazzar.streamdeck.vtubestudio.holdtransform",
-        "dev.cazzar.streamdeck.vtubestudio.toggleexpression",
-        "dev.cazzar.streamdeck.vtubestudio.holdexpression",
+        "dev.cazzar.vtubestudio.triggerhotkey",
+        "dev.cazzar.vtubestudio.changemodel",
+        "dev.cazzar.vtubestudio.reloadmodel",
+        "dev.cazzar.vtubestudio.movemodel",
+        "dev.cazzar.vtubestudio.scalemodel",
+        "dev.cazzar.vtubestudio.holdtransform",
+        "dev.cazzar.vtubestudio.toggleexpression",
+        "dev.cazzar.vtubestudio.holdexpression",
     ];
 
     [Fact]

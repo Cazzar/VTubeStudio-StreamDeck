@@ -2,6 +2,6 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
-    <VtsPackageUuid>dev.cazzar.streamdeck.vtubestudio</VtsPackageUuid>
+    <VtsPackageUuid>dev.cazzar.vtubestudio</VtsPackageUuid>
   </PropertyGroup>
 </Project>

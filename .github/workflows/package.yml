@@ -58,9 +58,9 @@ jobs:
       matrix:
         include:
           - host: StreamDeck
-            folder: dev.cazzar.streamdeck.vtubestudio.sdPlugin
+            folder: dev.cazzar.vtubestudio.sdPlugin
           - host: CreatorCentral
-            folder: dev.cazzar.creatorcentral.vtubestudio
+            folder: dev.cazzar.vtubestudio
     steps:
       - uses: actions/checkout@v7
         with:
@@ -100,9 +100,9 @@ jobs:
       matrix:
         include:
           - host: StreamDeck
-            folder: dev.cazzar.streamdeck.vtubestudio.sdPlugin
+            folder: dev.cazzar.vtubestudio.sdPlugin
           - host: CreatorCentral
-            folder: dev.cazzar.creatorcentral.vtubestudio
+            folder: dev.cazzar.vtubestudio
     steps:
       - uses: actions/checkout@v7
         with:
@@ -168,9 +168,9 @@ jobs:
       matrix:
         include:
           - host: StreamDeck
-            folder: dev.cazzar.streamdeck.vtubestudio.sdPlugin
+            folder: dev.cazzar.vtubestudio.sdPlugin
           - host: CreatorCentral
-            folder: dev.cazzar.creatorcentral.vtubestudio
+            folder: dev.cazzar.vtubestudio
     steps:
       - uses: actions/setup-node@v7
         if: matrix.host == 'StreamDeck'
@@ -213,8 +213,8 @@ jobs:
         if: matrix.host == 'StreamDeck'
         run: |
           set -euo pipefail
-          streamdeck pack dist/dev.cazzar.streamdeck.vtubestudio.sdPlugin -o dist --version "${{ needs.version.outputs.version }}" --force
-          mv dist/dev.cazzar.streamdeck.vtubestudio.streamDeckPlugin \
+          streamdeck pack dist/dev.cazzar.vtubestudio.sdPlugin -o dist --version "${{ needs.version.outputs.version }}" --force
+          mv dist/dev.cazzar.vtubestudio.streamDeckPlugin \
              "dist/vtubestudio-streamdeck-${{ needs.version.outputs.version }}.streamDeckPlugin"
 
       - name: Pack Creator Central package

@@ -19,9 +19,9 @@ public class VtsInfoPayloadTests
 
         foreach (var actionId in new[]
                  {
-                     "dev.cazzar.streamdeck.vtubestudio.toggleexpression",
-                     "dev.cazzar.streamdeck.vtubestudio.triggerhotkey",
-                     "dev.cazzar.streamdeck.vtubestudio.movemodel",
+                     "dev.cazzar.vtubestudio.toggleexpression",
+                     "dev.cazzar.vtubestudio.triggerhotkey",
+                     "dev.cazzar.vtubestudio.movemodel",
                  })
         {
             var @ref = new ActionRef($"ctx-{actionId}", actionId);
