@@ -5,6 +5,7 @@ using Cazzar.Deck.VTubeStudio.Caches;
 using VTubeStudio.Api.Models;
 using VTubeStudio.Api.Requests;
 using VTubeStudio.Api;
+using VTubeStudio.Api.Events;
 
 namespace Cazzar.Deck.VTubeStudio.Actions.Expressions;
 
@@ -33,6 +34,7 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
         _expressions = expressions;
         _models = models;
         _expressions.Updated += OnExpressionsUpdated;
+        Vts.ModelLoaded += OnModelLoaded;
     }
 
     protected override void Pressed()
@@ -61,6 +63,13 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
             _expressionName = string.Empty;
 
         Sync(_expressions.For(current.ModelId));
+    }
+    
+    private void OnModelLoaded(object? sender, VtsEventArgs<ModelLoadedEvent> e)
+    {
+        if (e.Response.ModelId == Settings.ModelId) return;
+
+        CurrentState = State.Inactive;
     }
 
     public override void Refresh(IPayload body)
@@ -94,5 +103,9 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
         if (Settings.ShowName && _expressionName.Length > 0) Title = _expressionName;
     }
 
-    public void Dispose() => _expressions.Updated -= OnExpressionsUpdated;
+    public void Dispose()
+    {
+        _expressions.Updated -= OnExpressionsUpdated;
+        Vts.ModelLoaded -= OnModelLoaded;
+    }
 }
