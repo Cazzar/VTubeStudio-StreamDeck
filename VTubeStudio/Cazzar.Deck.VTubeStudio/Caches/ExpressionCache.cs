@@ -27,7 +27,7 @@ public sealed class ExpressionCache
                 }),
             ];
             
-            Updated?.Invoke(this, new(Expressions));
+             Task.Run(() => Updated?.Invoke(this, new(Expressions)));
         };
 
         vts.ExpressionToggled += (_, e) =>
@@ -46,7 +46,7 @@ public sealed class ExpressionCache
                 ? [.. current.Select(x => x.File == toggled.File ? x with { IsActive = toggled.IsActive } : x)]
                 : [.. current, toggled];
 
-            Updated?.Invoke(this, new(Expressions));
+            Task.Run(() => Updated?.Invoke(this, new(Expressions)));
         };
     }
 
