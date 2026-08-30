@@ -12,7 +12,7 @@ using VTubeStudio.Api.Responses;
 namespace VTubeStudio.Api;
 
 [UsedImplicitly]
-public sealed class VTubeStudioClient(
+public sealed partial class VTubeStudioClient(
     IOptionsMonitor<VtsConnectionOptions> options,
     IVtsSettingsStore settings,
     IVtsPluginInfo plugin,
@@ -86,8 +86,20 @@ public sealed class VTubeStudioClient(
             _authenticated = false;
             _socket = new();
             _readLoop = new();
+            
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-            await _socket.ConnectAsync(uri, CancellationToken.None);
+            try
+            {
+                await _socket.ConnectAsync(uri, cts.Token);
+            }
+            catch (OperationCanceledException) when (cts.IsCancellationRequested)
+            {
+                _socket.Dispose();
+
+                logger.LogDebug("Unable to connect to VTube Studio");
+                return;
+            }
 
             Connected?.Invoke(this, EventArgs.Empty);
             _ = Task.Run(() => ReadAsync(_readLoop.Token));
@@ -117,13 +129,13 @@ public sealed class VTubeStudioClient(
     {
         if (_socket is not { State: WebSocketState.Open })
         {
-            logger.LogDebug("Not connected; dropping {MessageType}", request.MessageType);
+            LogNotStateDropping("connected", request.MessageType);
             return;
         }
 
         if (!_authenticated && request is not IUnauthenticatedRequest)
         {
-            logger.LogDebug("Not authenticated; dropping {MessageType}", request.MessageType);
+            LogNotStateDropping("authenticated", request.MessageType);
             return;
         }
 
@@ -138,7 +150,7 @@ public sealed class VTubeStudioClient(
         if (requestId is not null) envelope["requestID"] = requestId;
 
         var json = envelope.ToJsonString(VtsJson.Options);
-        logger.LogTrace("-> {Json}", json);
+        LogJson(json);
 
         _ = _socket.SendAsync(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true, CancellationToken.None);
     }
@@ -282,6 +294,8 @@ public sealed class VTubeStudioClient(
 
         _socket?.Dispose();
         _socket = null;
+        _readLoop?.Dispose();
+        _readLoop = null;
         _authenticated = false;
     }
 
