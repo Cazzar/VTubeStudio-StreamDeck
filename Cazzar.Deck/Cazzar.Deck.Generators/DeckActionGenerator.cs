@@ -80,9 +80,9 @@ public sealed class DeckActionGenerator : IIncrementalGenerator
     {
         for (var current = type; current is not null; current = current.BaseType)
         {
-            if (current.OriginalDefinition.MetadataName == "DeckAction`1" &&
+            if (current.OriginalDefinition.MetadataName is "DeckAction`1" or "DeckAction`2" &&
                 current.OriginalDefinition.ToDisplayString().StartsWith("Cazzar.Deck.Core.Actions.DeckAction") &&
-                current.TypeArguments.Length == 1)
+                current.TypeArguments.Length >= 1)
             {
                 return current.TypeArguments[0].ToDisplayString();
             }

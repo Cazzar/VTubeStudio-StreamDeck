@@ -85,3 +85,25 @@ public abstract class DeckAction<TSettings> : IContextBound, ISettingsHandler, I
 
     protected ValueTask SendToPropertyViewAsync(JsonNode payload) => Context.PropertyView.SendAsync(Ref, payload);
 }
+
+public abstract class DeckAction<TSettings, TState> : DeckAction<TSettings>
+    where TSettings : new()
+    where TState : struct, Enum
+{
+    protected DeckAction(DeckActionContext context) : base(context) { }
+
+    private bool _stateWritten;
+
+    /// <summary>Pushes only on change.</summary>
+    protected TState CurrentState
+    {
+        get;
+        set
+        {
+            if (_stateWritten && EqualityComparer<TState>.Default.Equals(field, value)) return;
+
+            (field, _stateWritten) = (value, true);
+            _ = SetStateAsync(Convert.ToUInt32(value));
+        }
+    }
+}

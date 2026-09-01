@@ -7,9 +7,10 @@ using VTubeStudio.Api;
 
 namespace Cazzar.Deck.VTubeStudio;
 
-public abstract class VTubeStudioAction<TSettings>(DeckActionContext context, IVTubeStudio vts)
-    : DeckAction<TSettings>(context), IPropertyViewHandler, IPropertyViewCommands, ITickHandler
+public abstract class VTubeStudioAction<TSettings, TState>(DeckActionContext context, IVTubeStudio vts)
+    : DeckAction<TSettings, TState>(context), IPropertyViewHandler, IPropertyViewCommands, ITickHandler
     where TSettings : new()
+    where TState : struct, Enum
 {
     protected IVTubeStudio Vts { get; } = vts;
 
@@ -37,7 +38,7 @@ public abstract class VTubeStudioAction<TSettings>(DeckActionContext context, IV
     }
 
     protected static JsonArray Choices<T>(IEnumerable<T> items, Func<T, string> id, Func<T, string> name) =>
-        [with(items.Select(JsonNode (i) => new JsonObject { ["id"] = id(i), ["name"] = name(i) }).ToArray())];
+        [..items.Select(JsonNode (i) => new JsonObject { ["id"] = id(i), ["name"] = name(i) }).ToArray()];
 
     protected virtual JsonNode ClientData() => new JsonObject { ["connected"] = Vts.IsAuthenticated };
 
@@ -74,3 +75,7 @@ public abstract class VTubeStudioAction<TSettings>(DeckActionContext context, IV
         if (_propertyViewOpen) _ = UpdateClientAsync();
     }
 }
+
+public abstract class VTubeStudioAction<TSettings>(DeckActionContext context, IVTubeStudio vts)
+    : VTubeStudioAction<TSettings, SingleState>(context, vts)
+    where TSettings : new();
