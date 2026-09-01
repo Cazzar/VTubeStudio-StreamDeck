@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  MISE_TRUSTED_CONFIG_PATHS: ${{ github.workspace }}
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore DeckKit.slnx
+
+      - name: Build
+        run: dotnet build DeckKit.slnx -c Release --no-restore -p:BuildPropertyInspector=false
+
+      - name: Test
+        run: dotnet test DeckKit.slnx -c Release --no-build -p:BuildPropertyInspector=false
+
+  property-views:
+    name: Lint ${{ matrix.host }} property view
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [StreamDeck, CreatorCentral]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: jdx/mise-action@v4
+
+      - name: Lint
+        working-directory: VTubeStudio/Cazzar.Deck.VTubeStudio.${{ matrix.host }}/PropertyInspector
+        run: mise run lint
+
+  package:
+    name: Package
+    needs: [build, property-views]
+    uses: ./.github/workflows/package.yml

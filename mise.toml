@@ -1,0 +1,89 @@
+[tools]
+dotnet = "10"
+node = "24"
+npm = "12"
+"npm:@elgato/cli" = { version = "1", trust_policy_excludes = ["@humanwhocodes/momoa@3.3.12"] }
+
+[env]
+SD = "VTubeStudio/Cazzar.Deck.VTubeStudio.StreamDeck/Cazzar.Deck.VTubeStudio.StreamDeck.csproj"
+CC = "VTubeStudio/Cazzar.Deck.VTubeStudio.CreatorCentral/Cazzar.Deck.VTubeStudio.CreatorCentral.csproj"
+
+[tasks.build]
+description = "Build the whole solution"
+usage = 'flag "--debug" help="Build Debug instead of Release"'
+run = "dotnet build DeckKit.slnx -c {% if usage.debug %}Debug{% else %}Release{% endif %} -p:BuildPropertyInspector=false"
+
+[tasks.test]
+description = "Run every test"
+usage = 'flag "--debug" help="Build Debug instead of Release"'
+run = "dotnet test DeckKit.slnx -c {% if usage.debug %}Debug{% else %}Release{% endif %} -p:BuildPropertyInspector=false"
+
+[tasks.streamdeck]
+description = "Build and pack the Stream Deck plugin into dist/"
+usage = '''
+arg "[version]" default="0.0.1.0"
+flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
+}
+flag "--debug" help="Build Debug instead of Release"
+flag "--release" help="Build Release (the default)"
+'''
+run = [
+  "dotnet build {{env.SD}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}}",
+  "dotnet publish {{env.SD}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -r win-x64 --self-contained true -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}} -p:BuildPropertyInspector=false -o dist/{{usage.uuid}}.sdPlugin/win",
+  "dotnet publish {{env.SD}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -r osx-x64 --self-contained true -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}} -p:BuildPropertyInspector=false -o dist/{{usage.uuid}}.sdPlugin/osx",
+  "streamdeck pack dist/{{usage.uuid}}.sdPlugin -o dist --version {{usage.version}} --force",
+]
+
+[tasks.creatorcentral]
+description = "Build the Creator Central package into dist/, ready for their packaging tool"
+usage = '''
+arg "[version]" default="0.0.1.0"
+flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
+}
+flag "--debug" help="Build Debug instead of Release"
+flag "--release" help="Build Release (the default)"
+'''
+run = [
+  "dotnet build {{env.CC}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}}",
+  "dotnet publish {{env.CC}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -r win-x64 --self-contained true -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}} -p:BuildPropertyInspector=false -o dist/{{usage.uuid}}/win",
+  "dotnet publish {{env.CC}} -c {% if usage.debug %}Debug{% else %}Release{% endif %} -r osx-x64 --self-contained true -p:Version={{usage.version}} -p:DeckPackageUuid={{usage.uuid}} -p:BuildPropertyInspector=false -o dist/{{usage.uuid}}/osx",
+]
+
+[tasks.package]
+description = "Build both plugin packages"
+usage = '''
+arg "[version]" default="0.0.1.0"
+flag "--uuid <uuid>" help="Package uuid; a second uuid installs alongside the first" {
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
+}
+flag "--debug" help="Build Debug instead of Release"
+'''
+run = [
+  { task = "streamdeck", args = ["{{usage.version}}", "--uuid", "{{usage.uuid}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
+  { task = "creatorcentral", args = ["{{usage.version}}", "--uuid", "{{usage.uuid}}", "{% if usage.debug %}--debug{% else %}--release{% endif %}"] },
+]
+
+[tasks.validate]
+description = "Run Elgato's validator over the Stream Deck package"
+usage = '''
+flag "--uuid <uuid>" help="Package uuid to validate" {
+  arg "<uuid>" default="dev.cazzar.vtubestudio"
+}
+'''
+run = "streamdeck validate dist/{{usage.uuid}}.sdPlugin"
+
+[tasks.clean]
+description = "Remove build and packaging output"
+run = [
+  "dotnet clean DeckKit.slnx -c Debug",
+  "dotnet clean DeckKit.slnx -c Release",
+  "rm -rf dist artifacts",
+]
+run_windows = [
+  "dotnet clean DeckKit.slnx -c Debug",
+  "dotnet clean DeckKit.slnx -c Release",
+  "if exist dist rmdir /s /q dist",
+  "if exist artifacts rmdir /s /q artifacts",
+]

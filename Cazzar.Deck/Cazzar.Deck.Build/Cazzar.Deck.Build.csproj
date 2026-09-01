@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
+    <TargetFramework></TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <NoWarn>$(NoWarn);NU5100</NoWarn>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\DeckActionNaming.cs" Link="Shared\DeckActionNaming.cs" />
+    <Compile Include="..\Shared\DeckHostFlags.cs" Link="Shared\DeckHostFlags.cs" />
+    <Compile Include="..\Shared\CompilerFeatureRequiredAttribute.cs" Link="Shared\CompilerFeatureRequiredAttribute.cs" />
+    <Compile Include="..\Shared\IsExternalInit.cs" Link="Shared\IsExternalInit.cs" />
+    <Compile Include="..\Shared\RequiredMemberAttribute.cs" Link="Shared\RequiredMemberAttribute.cs" />
+    <Compile Include="..\Shared\SetsRequiredMembersAttribute.cs" Link="Shared\SetsRequiredMembersAttribute.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="18.0.2" ExcludeAssets="runtime" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.0.0" />
+    <PackageReference Include="System.Text.Json" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>

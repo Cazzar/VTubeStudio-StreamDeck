@@ -1,0 +1,78 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>vts-creatorcentral</AssemblyName>
+    <RootNamespace>VTubeStudio.CreatorCentral</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="6.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cazzar.Deck.VTubeStudio\Cazzar.Deck.VTubeStudio.csproj" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Build\Cazzar.Deck.Build.csproj"
+                      ReferenceOutputAssembly="false" Private="false"
+                      SetTargetFramework="TargetFramework=netstandard2.0" />
+    <ProjectReference Include="..\..\Cazzar.Deck\Cazzar.Deck.Hosts.CreatorCentral\Cazzar.Deck.Hosts.CreatorCentral.csproj" />
+  </ItemGroup>
+
+
+
+  <PropertyGroup>
+    <DeckPackageUuid>$(VtsPackageUuid)</DeckPackageUuid>
+    <DeckPackageDir>$(MSBuildProjectDirectory)\..\..\dist\$(DeckPackageUuid)\</DeckPackageDir>
+    <DeckPackageName>VTubeStudio</DeckPackageName>
+    <DeckPackageIcon>vts_logo_transparent</DeckPackageIcon>
+    <Description>Trigger and control VTube Studio from your deck.</Description>
+    <DeckActionAssembly>$(MSBuildThisFileDirectory)..\Cazzar.Deck.VTubeStudio\bin\$(Configuration)\$(TargetFramework)\Cazzar.Deck.VTubeStudio.dll</DeckActionAssembly>
+    <DeckActionFragmentGlob>$(MSBuildThisFileDirectory)..\Cazzar.Deck.VTubeStudio\Actions\**\*.creatorcentral.json</DeckActionFragmentGlob>
+    <DeckBuildTaskAssembly>$(MSBuildThisFileDirectory)..\..\Cazzar.Deck\Cazzar.Deck.Build\bin\$(Configuration)\netstandard2.0\Cazzar.Deck.Build.dll</DeckBuildTaskAssembly>
+    <DeckHost>CreatorCentral</DeckHost>
+    <DeckHostMinimumVersion>1.1</DeckHostMinimumVersion>
+    <DeckWindowsMinimumVersion>6.0</DeckWindowsMinimumVersion>
+    <DeckMacMinimumVersion>11.0</DeckMacMinimumVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DeckPackageAsset Include="$(MSBuildThisFileDirectory)..\Cazzar.Deck.VTubeStudio\Assets\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="vts_plugin_icon.png" />
+  </ItemGroup>
+
+  <Import Project="..\..\Cazzar.Deck\Cazzar.Deck.Build\build\Cazzar.Deck.Build.targets" />
+
+  <ItemGroup>
+    <None Update="NLog.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+
+  <PropertyGroup>
+    <PropertyInspectorDir>$(MSBuildThisFileDirectory)PropertyInspector\</PropertyInspectorDir>
+    <BuildPropertyInspector Condition="'$(BuildPropertyInspector)' == ''">true</BuildPropertyInspector>
+    <DeckStrictAssets Condition="'$(BuildPropertyInspector)' == 'true'">true</DeckStrictAssets>
+    <DeckPropertyViewPending>$(BuildPropertyInspector)</DeckPropertyViewPending>
+    <DeckRoutesOutput>$(PropertyInspectorDir)src\routes.generated.js</DeckRoutesOutput>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PropertyInspectorSource Include="$(PropertyInspectorDir)src\**\*" />
+    <PropertyInspectorSource Include="$(PropertyInspectorDir)package.json" />
+    <PropertyInspectorSource Include="$(PropertyInspectorDir)vite.config.js" />
+    <PropertyInspectorSource Include="$(DeckRoutesOutput)" />
+    <PropertyInspectorSource Include="$(MSBuildThisFileDirectory)..\Cazzar.Deck.VTubeStudio.Views\src\**\*" />
+  </ItemGroup>
+
+  <Target Name="BuildPropertyInspector"
+          AfterTargets="GenerateDeckManifest"
+          Condition="'$(BuildPropertyInspector)' == 'true'"
+          Inputs="@(PropertyInspectorSource)"
+          Outputs="$(DeckPackageDir)PropertyInspector\index.html">
+    <Exec Command="mise run build" WorkingDirectory="$(PropertyInspectorDir)" />
+  </Target>
+
+</Project>

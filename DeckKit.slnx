@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Cazzar.Deck/">
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Abstractions/Cazzar.Deck.Abstractions.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Build/Cazzar.Deck.Build.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Core/Cazzar.Deck.Core.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Generators/Cazzar.Deck.Generators.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Hosts.CreatorCentral/Cazzar.Deck.Hosts.CreatorCentral.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Hosts.Loopback/Cazzar.Deck.Hosts.Loopback.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Hosts.StreamDeck/Cazzar.Deck.Hosts.StreamDeck.csproj" />
+    <Project Path="Cazzar.Deck/Cazzar.Deck.Tests/Cazzar.Deck.Tests.csproj" />
+  </Folder>
+  <Folder Name="/VTubeStudio/">
+    <Project Path="VTubeStudio/Cazzar.Deck.VTubeStudio/Cazzar.Deck.VTubeStudio.csproj" />
+    <Project Path="VTubeStudio/Cazzar.Deck.VTubeStudio.CreatorCentral/Cazzar.Deck.VTubeStudio.CreatorCentral.csproj" />
+    <Project Path="VTubeStudio/Cazzar.Deck.VTubeStudio.StreamDeck/Cazzar.Deck.VTubeStudio.StreamDeck.csproj" />
+    <Project Path="VTubeStudio/Cazzar.Deck.VTubeStudio.Tests/Cazzar.Deck.VTubeStudio.Tests.csproj" />
+    <Project Path="VTubeStudio/VTubeStudio.Api/VTubeStudio.Api.csproj" />
+  </Folder>
+</Solution>

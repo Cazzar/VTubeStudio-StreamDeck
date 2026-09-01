@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\DeckHostFlags.cs" Link="Shared\DeckHostFlags.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cazzar.Deck.Hosts.StreamDeck\Cazzar.Deck.Hosts.StreamDeck.csproj" />
+    <ProjectReference Include="..\Cazzar.Deck.Hosts.CreatorCentral\Cazzar.Deck.Hosts.CreatorCentral.csproj" />
+    <ProjectReference Include="..\Cazzar.Deck.Hosts.Loopback\Cazzar.Deck.Hosts.Loopback.csproj" />
+    <ProjectReference Include="..\Cazzar.Deck.Generators\Cazzar.Deck.Generators.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+</Project>

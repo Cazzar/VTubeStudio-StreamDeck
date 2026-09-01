@@ -1,0 +1,10 @@
+{
+  "Encoder": {
+    "layout": "$A1",
+    "TriggerDescription": {
+      "Rotate": "Rotate model",
+      "Push": "Reset to default rotation",
+      "Touch": "Reset to default rotation"
+    }
+  }
+}

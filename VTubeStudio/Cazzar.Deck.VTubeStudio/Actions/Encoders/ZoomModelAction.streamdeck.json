@@ -1,0 +1,13 @@
+{
+  "Encoder": {
+    "layout": "$B1",
+    "TriggerDescription": {
+      "Rotate": "Zoom model",
+      "Push": "Reset to default zoom",
+      "Touch": "Reset to default zoom"
+    }
+  },
+  "States": [
+    { "Image": "vts_logo_transparent", "TitleAlignment": "bottom", "FontSize": 10 }
+  ]
+}
