@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using Cazzar.Deck.Abstractions.Actions;
 using Cazzar.Deck.Abstractions;
 using Cazzar.Deck.VTubeStudio.Caches;
-using VTubeStudio.Api.Models;
 using VTubeStudio.Api.Requests;
 using VTubeStudio.Api;
 using VTubeStudio.Api.Events;
@@ -88,7 +87,7 @@ public sealed class ToggleExpressionAction : VTubeStudioAction<ExpressionSetting
         _ = UpdateClientAsync();
     }
 
-    private void OnExpressionsUpdated(object? sender, ExpressionCacheUpdatedEventArgs e) =>
+    private void OnExpressionsUpdated(object? sender, EventArgs e) =>
         Sync(_expressions.For(Settings.ModelId));
 
     private void Sync(IReadOnlyList<ExpressionStatus> expressions)

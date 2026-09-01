@@ -27,7 +27,7 @@ public sealed class ExpressionCache
                 }),
             ];
             
-             Task.Run(() => Updated?.Invoke(this, new(Expressions)));
+             Task.Run(() => Updated?.Invoke(this, EventArgs.Empty));
         };
 
         vts.ExpressionToggled += (_, e) =>
@@ -46,13 +46,11 @@ public sealed class ExpressionCache
                 ? [.. current.Select(x => x.File == toggled.File ? x with { IsActive = toggled.IsActive } : x)]
                 : [.. current, toggled];
 
-            Task.Run(() => Updated?.Invoke(this, new(Expressions)));
+            Task.Run(() => Updated?.Invoke(this, EventArgs.Empty));
         };
     }
 
-    private IReadOnlyDictionary<string, IReadOnlyList<ExpressionStatus>> Expressions => _expressions;
-
-    public event EventHandler<ExpressionCacheUpdatedEventArgs>? Updated;
+    public event EventHandler? Updated;
 
     public IReadOnlyList<ExpressionStatus> For(string? modelId) =>
         modelId is not null && _expressions.TryGetValue(modelId, out var expressions) ? expressions : [];

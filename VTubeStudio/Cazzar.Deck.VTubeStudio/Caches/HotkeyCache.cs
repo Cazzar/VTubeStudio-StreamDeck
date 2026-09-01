@@ -21,7 +21,6 @@ public sealed class HotkeyCache
             if (string.IsNullOrEmpty(e.Response.ModelId)) return;
 
             _hotkeys[e.Response.ModelId] = e.Response.Hotkeys;
-            Updated?.Invoke(this, new(Hotkeys));
         };
 
         vts.AvailableModels += (_, e) =>
@@ -35,10 +34,6 @@ public sealed class HotkeyCache
             if (e.Response.HotkeyConfigChanged) vts.Send(new ModelHotkeysRequest(e.Response.ModelId));
         };
     }
-
-    public IReadOnlyDictionary<string, IReadOnlyList<Hotkey>> Hotkeys => _hotkeys;
-
-    public event EventHandler<HotkeyCacheUpdatedEventArgs>? Updated;
 
     public IReadOnlyList<Hotkey> For(string? modelId) =>
         modelId is not null && _hotkeys.TryGetValue(modelId, out var hotkeys) ? hotkeys : [];

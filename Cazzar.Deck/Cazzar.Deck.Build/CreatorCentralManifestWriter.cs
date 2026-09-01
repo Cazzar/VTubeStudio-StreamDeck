@@ -4,8 +4,6 @@ namespace Cazzar.Deck.Build;
 
 public sealed class CreatorCentralManifestWriter : IManifestWriter
 {
-    public string Host => "CreatorCentral";
-
     private static string Icon(string? icon, string fallback) =>
         (icon ?? fallback) is var name && Path.HasExtension(name) ? name : name + ".png";
 

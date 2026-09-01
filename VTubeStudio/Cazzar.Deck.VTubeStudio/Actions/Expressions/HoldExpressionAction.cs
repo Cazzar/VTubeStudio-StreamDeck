@@ -61,7 +61,7 @@ public sealed class HoldExpressionAction : VTubeStudioAction<ExpressionSettings>
         _ = UpdateClientAsync();
     }
 
-    private void OnExpressionsUpdated(object? sender, ExpressionCacheUpdatedEventArgs e) => UpdateTitle();
+    private void OnExpressionsUpdated(object? sender, EventArgs e) => UpdateTitle();
 
     private void UpdateTitle()
     {

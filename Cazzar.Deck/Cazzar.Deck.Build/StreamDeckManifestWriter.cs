@@ -4,8 +4,6 @@ namespace Cazzar.Deck.Build;
 
 public sealed class StreamDeckManifestWriter : IManifestWriter
 {
-    public string Host => "StreamDeck";
-
     // Elgato requires exactly {major}.{minor}.{patch}.{build}.
     private static string Version(string version)
     {
